@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import localfont from "next/font/local";
 import "./globals.css";
+import Web3ModalProvider from "@/context";
+import { cookieToInitialState } from "wagmi";
+import { config } from "@/config";
+import { headers } from "next/headers";
 
 const ppmori = localfont({
 	src: [
@@ -22,9 +26,14 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const initialState = cookieToInitialState(config, headers().get("cookie"));
 	return (
 		<html lang="en">
-			<body className={ppmori.className}>{children}</body>
+			<body className={ppmori.className}>
+				<Web3ModalProvider initialState={initialState}>
+					{children}
+				</Web3ModalProvider>
+			</body>
 		</html>
 	);
 }
