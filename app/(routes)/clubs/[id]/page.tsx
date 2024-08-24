@@ -101,7 +101,9 @@ export default function ClubInfo() {
 							value="chat"
 							className="border rounded-xl p-4 px-5 mt-5"
 						>
-							Change your password here.
+							<div className="flex items-center justify-center  min-h-[300px] w-full text-3xl font-medium">
+								Coming Soon
+							</div>
 						</TabsContent>
 						<TabsContent
 							value="events"
