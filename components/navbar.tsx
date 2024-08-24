@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 import Image from "next/image";
 
-const links = ["clubs", "bridge"];
+const links = ["clubs", "marketplace", "bridge"];
 
 export default function Navbar() {
 	const { address, isConnected } = useAccount();
@@ -37,7 +37,7 @@ export default function Navbar() {
 						{links.map((link) => (
 							<Link
 								key={link}
-								href={`/${link}`}
+								href={`/${link.toLowerCase()}`}
 								className="capitalize"
 							>
 								{link}
