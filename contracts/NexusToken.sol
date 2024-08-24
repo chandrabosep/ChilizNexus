@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC223, IERC223} from "./ERC223/ERC223.sol";
@@ -34,9 +34,7 @@ contract Nexus is ERC223 {
     event TokenRedeemed(address indexed from, address indexed token, uint256 value);
 
     /// @notice Constructor to initialize the contract with supported fan tokens
-    /// @param name Name of the Nexus token
-    /// @param symbol Symbol of the Nexus token
-    constructor(string memory name, string memory symbol) ERC223(name, symbol, 0) {
+    constructor() ERC223("ChilizNexusToken", "CNT", 0) {
         // Initialize the supported tokens mapping with predefined fan tokens
         s_supportedFanTokens[0xa4bf4104ec0109591077Ee5F4a2bFD13dEE1Bdf8] = true; // testPSG
         s_supportedFanTokens[0x63667746A7A005E45B1fffb13a78d0331065Ff7f] = true; // testBAR
@@ -48,7 +46,7 @@ contract Nexus is ERC223 {
     /// @param amount The amount of the fan token to deposit
     function mintToken(address tokenAddress, uint256 amount) public {
         // Revert if the token is not supported
-        if (!isSupportedToken(tokenAddress)) revert Nexus__UnsupportedToken();
+        if (!isSupportedFanToken(tokenAddress)) revert Nexus__UnsupportedToken();
 
         // Revert if the user's allowance is insufficient
         if (IERC20(tokenAddress).allowance(msg.sender, address(this)) < amount) revert Nexus__InsufficientAllowance();
@@ -83,7 +81,7 @@ contract Nexus is ERC223 {
     /// @param amount The amount of Nexus tokens to redeem
     function redeemToken(address tokenAddress, uint256 amount) public {
         // Revert if the token is not supported
-        if (!isSupportedToken(tokenAddress)) revert Nexus__UnsupportedToken();
+        if (!isSupportedFanToken(tokenAddress)) revert Nexus__UnsupportedToken();
 
         // Revert if the user has insufficient Nexus tokens
         if (balanceOf(msg.sender) < amount) revert Nexus__InsufficientBalance();
@@ -120,7 +118,7 @@ contract Nexus is ERC223 {
     /// @param tokenAddress The address of the token to add
     function addSupportedToken(address tokenAddress) public {
         // Revert if the token is already supported
-        if (isSupportedToken(tokenAddress)) revert("Token already supported");
+        if (isSupportedFanToken(tokenAddress)) revert("Token already supported");
         // Add the token to the supported tokens mapping
         s_supportedFanTokens[tokenAddress] = true;
     }
@@ -129,7 +127,7 @@ contract Nexus is ERC223 {
     /// @param tokenAddress The address of the token to remove
     function removeSupportedToken(address tokenAddress) public {
         // Revert if the token is not supported
-        if (!isSupportedToken(tokenAddress)) revert("Token not supported");
+        if (!isSupportedFanToken(tokenAddress)) revert("Token not supported");
         // Remove the token from the supported tokens mapping
         s_supportedFanTokens[tokenAddress] = false;
     }
@@ -147,7 +145,7 @@ contract Nexus is ERC223 {
     /// @notice Function to check if a token is supported
     /// @param tokenAddress The address of the token to check
     /// @return A boolean indicating whether the token is supported
-    function isSupportedToken(address tokenAddress) public view returns (bool) {
+    function isSupportedFanToken(address tokenAddress) public view returns (bool) {
         return s_supportedFanTokens[tokenAddress];
     }
 
