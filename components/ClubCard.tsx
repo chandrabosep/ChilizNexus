@@ -56,7 +56,7 @@ export default function ClubCard({ data }: any) {
 					<>
 						<div className="flex items-center justify-between">
 							<h3 className="text-xl font-bold">{data.title}</h3>
-							<Link href={`/explore/1`}>
+							<Link href={`/clubs/1`}>
 								<SquareArrowOutUpRight className="w-4 h-4 text-primaryColor" />
 							</Link>
 						</div>
