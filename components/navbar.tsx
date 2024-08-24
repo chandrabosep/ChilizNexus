@@ -4,20 +4,29 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 import Image from "next/image";
 
-const links = ["explore", "pool"];
+const links = ["clubs", "bridge"];
 
 export default function Navbar() {
-	const { isConnected } = useAccount();
-	// const adminAddresses = [
-	// 	"0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701",
-	// 	"0x709d29dc073F42feF70B6aa751A8D186425b2750",
-	// 	"0xA9ab8933Ff0467D51d13ea2bFECD81504Fc6f15a",
-	// ];
+	const { address, isConnected } = useAccount();
+	const adminAddresses = [
+		"0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701",
+		"0x709d29dc073F42feF70B6aa751A8D186425b2750",
+		"0xA9ab8933Ff0467D51d13ea2bFECD81504Fc6f15a",
+	];
 
 	return (
-		<div className="flex items-center justify-between py-4 border-b border-secondaryColor/30 text-secondaryColor">
-			<Link href="/" className={`text-2xl font-medium flex items-center gap-x-4`}>
-				<Image src="/logo.svg" alt="logo" width={100} height={100} className="w-6" />
+		<div className="flex items-center justify-between py-4 border-b border-secondaryColor/30 ">
+			<Link
+				href="/"
+				className={`text-2xl font-bold flex items-center gap-x-3 text-secondaryColor`}
+			>
+				<Image
+					src="/logo.svg"
+					alt="logo"
+					width={100}
+					height={100}
+					className="w-6"
+				/>
 				ChilizNexus
 			</Link>
 			<div
@@ -25,9 +34,6 @@ export default function Navbar() {
 			>
 				{isConnected && (
 					<>
-						<Link href="/dashboard" className="">
-							Dashboard
-						</Link>
 						{links.map((link) => (
 							<Link
 								key={link}
@@ -40,7 +46,7 @@ export default function Navbar() {
 					</>
 				)}
 
-				{/* {isConnected && (
+				{isConnected && (
 					<>
 						{adminAddresses
 							.map((addr: any) => addr.toLowerCase())
@@ -50,7 +56,7 @@ export default function Navbar() {
 							</Link>
 						)}
 					</>
-				)} */}
+				)}
 			</div>
 			<w3m-button balance="hide" />
 		</div>
