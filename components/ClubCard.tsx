@@ -78,7 +78,7 @@ export default function ClubCard({ data }: any) {
 								<div className="mx-auto text-center">
 									<h6 className="text-xl font-bold">Fans</h6>
 									<p className="text-muted-foreground text-3xl">
-										10k+
+										{data.fans}+
 									</p>
 								</div>
 								<div className="mx-auto text-center">
@@ -86,7 +86,7 @@ export default function ClubCard({ data }: any) {
 										Holders
 									</h6>
 									<p className="text-muted-foreground text-3xl">
-										26k+
+										{data.holders}+
 									</p>
 								</div>
 							</div>

@@ -15,7 +15,7 @@ export default function Navbar() {
 	];
 
 	return (
-		<div className="flex items-center justify-between py-4 border-b">
+		<div className="flex items-center justify-between py-4 border-2 border-primaryColor rounded-full px-6 mt-4">
 			<Link
 				href="/"
 				className={`text-2xl font-bold flex items-center gap-x-3 text-secondaryColor`}
@@ -25,7 +25,7 @@ export default function Navbar() {
 					alt="logo"
 					width={100}
 					height={100}
-					className="w-6"
+					className="w-5"
 				/>
 				ChilizNexus
 			</Link>

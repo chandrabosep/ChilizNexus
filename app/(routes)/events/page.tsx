@@ -8,7 +8,7 @@ export default function Marketplace() {
 		<div className="flex flex-col py-10 gap-y-8 w-full max-w-screen-2xl">
 			<div className="flex items-center justify-between">
 				<h2
-					className={`text-3xl text-primaryColor underline decoration-secondaryColor decoration-wavy font-semibold`}
+					className={`text-3xl text-secondaryColor font-semibold`}
 				>
 					Events Hub
 				</h2>
@@ -22,7 +22,7 @@ export default function Marketplace() {
 			</div>
 			<div className="flex flex-col w-full gap-6">
 				<div className="flex flex-col gap-y-8 py-4">
-					<h6 className="text-xl text-primaryColor border-b-2 border-secondaryColor w-fit font-semibold">
+					<h6 className="text-xl text-primaryColor underline decoration-secondaryColor decoration-wavy underline-offset-4 w-fit font-semibold">
 						Live Events
 					</h6>
 					<div className="flex flex-wrap gap-6">
@@ -30,7 +30,7 @@ export default function Marketplace() {
 					</div>
 				</div>
 				<div className="flex flex-col gap-y-8 py-4">
-					<h6 className="text-xl text-primaryColor border-b-2 border-secondaryColor w-fit font-semibold">
+					<h6 className="text-xl text-primaryColor underline decoration-secondaryColor decoration-wavy underline-offset-4 w-fit font-semibold">
 						Virtual Events
 					</h6>
 					<div className="flex flex-wrap gap-6">
@@ -38,7 +38,7 @@ export default function Marketplace() {
 					</div>
 				</div>
 				<div className="flex flex-col gap-y-8 py-4">
-					<h6 className="text-xl text-primaryColor border-b-2 border-secondaryColor w-fit font-semibold">
+					<h6 className="text-xl text-primaryColor underline decoration-secondaryColor decoration-wavy underline-offset-4 w-fit font-semibold">
 						{`Community Events (local)`}
 					</h6>
 					<div className="flex flex-wrap gap-6">
