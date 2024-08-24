@@ -15,7 +15,7 @@ export default function Navbar() {
 	];
 
 	return (
-		<div className="flex items-center justify-between py-4 border-b border-secondaryColor/30 ">
+		<div className="flex items-center justify-between py-4 border-b">
 			<Link
 				href="/"
 				className={`text-2xl font-bold flex items-center gap-x-3 text-secondaryColor`}
