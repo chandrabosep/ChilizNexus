@@ -2,21 +2,21 @@
 pragma solidity ^0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {CAP223, ICAP223} from "./CAP223/CAP223.sol";
+import {CAP223, ICAP223} from "./CAP223.sol";
 
-/// Nexus Token Contract
+/// NexusToken Contract
 /// @dev A contract creates interoperable for platform tokens using fan tokens, including minting and redeeming operations.
 
 // Custom errors for more efficient error handling
-error Nexus__InvalidAddress();
-error Nexus__UnsupportedToken();
-error Nexus__InsufficientAllowance();
-error Nexus__InsufficientBalance();
-error Nexus__TransferFailed();
-error Nexus__RedemptionFailed();
+error NexusToken__InvalidAddress();
+error NexusToken__UnsupportedToken();
+error NexusToken__InsufficientAllowance();
+error NexusToken__InsufficientBalance();
+error NexusToken__TransferFailed();
+error NexusToken__RedemptionFailed();
 
-/// @notice Nexus contract extending CAP223
-contract Nexus is CAP223 {
+/// @notice NexusToken contract extending CAP223
+contract NexusToken is CAP223 {
     /// @notice Mapping to track supported fan tokens
     mapping(address => bool) private s_supportedFanTokens;
 
@@ -41,20 +41,20 @@ contract Nexus is CAP223 {
     );
 
     /// @notice Constructor to initialize the contract with supported fan tokens
-    constructor() CAP223("ChilizNexusToken", "CNT", 0) {
+    constructor() CAP223("ChilizNexusTokenToken", "CNT", 0) {
         // Initialize the supported tokens mapping with predefined fan tokens
         s_supportedFanTokens[0x63667746A7A005E45B1fffb13a78d0331065Ff7f] = true; // testBAR
         s_supportedFanTokens[0xa4bf4104ec0109591077Ee5F4a2bFD13dEE1Bdf8] = true; // testPSG
         s_supportedFanTokens[0x1ED7858225dF2a3365d07dD7C08d165D6A399bE6] = true; // testJUV
     }
 
-    /// @notice Function to mint Nexus tokens by depositing supported fan tokens
+    /// @notice Function to mint NexusToken tokens by depositing supported fan tokens
     /// @param fanTokenAddress The address of the supported fan token
     /// @param amount The amount of the fan token to deposit
     function mintToken(address fanTokenAddress, uint256 amount) public {
         // Revert if the token is not supported
         if (!isSupportedFanToken(fanTokenAddress))
-            revert Nexus__UnsupportedToken();
+            revert NexusToken__UnsupportedToken();
 
         if (!checkUserOwnFanTokens(fanTokenAddress, msg.sender)) revert();
 
@@ -62,7 +62,7 @@ contract Nexus is CAP223 {
         if (
             IERC20(fanTokenAddress).allowance(msg.sender, address(this)) <
             amount
-        ) revert Nexus__InsufficientAllowance();
+        ) revert NexusToken__InsufficientAllowance();
 
         // Attempt to transfer the fan tokens from the user to this contract
         bool success = IERC20(fanTokenAddress).transferFrom(
@@ -71,9 +71,9 @@ contract Nexus is CAP223 {
             amount
         );
         // Revert if the transfer fails
-        if (!success) revert Nexus__TransferFailed();
+        if (!success) revert NexusToken__TransferFailed();
 
-        // Call internal function to mint Nexus tokens
+        // Call internal function to mint NexusToken tokens
         _mintToken(msg.sender, fanTokenAddress, amount);
 
         // Emit the TokenMinted event
@@ -81,7 +81,7 @@ contract Nexus is CAP223 {
     }
 
     /// @notice Internal function to handle the minting logic
-    /// @param user The address of the user receiving the Nexus tokens
+    /// @param user The address of the user receiving the NexusToken tokens
     /// @param fanTokenAddress The address of the supported fan token
     /// @param amount The amount of the fan token to deposit
     function _mintToken(
@@ -93,29 +93,29 @@ contract Nexus is CAP223 {
         s_userDeposits[user][fanTokenAddress] += amount;
         // Increment the total supply of the specified fan token
         s_fanTokenSupply[fanTokenAddress] += amount;
-        // Mint the equivalent amount of Nexus tokens to the user
+        // Mint the equivalent amount of NexusToken tokens to the user
         _mint(user, amount);
     }
 
-    /// @notice Function to redeem Nexus tokens for the original fan tokens
+    /// @notice Function to redeem NexusToken tokens for the original fan tokens
     /// @param fanTokenAddress The address of the supported fan token
-    /// @param amount The amount of Nexus tokens to redeem
+    /// @param amount The amount of NexusToken tokens to redeem
     function redeemToken(address fanTokenAddress, uint256 amount) public {
         // Revert if the token is not supported
         if (!isSupportedFanToken(fanTokenAddress))
-            revert Nexus__UnsupportedToken();
+            revert NexusToken__UnsupportedToken();
 
-        // Revert if the user has insufficient Nexus tokens
-        if (balanceOf(msg.sender) < amount) revert Nexus__InsufficientBalance();
+        // Revert if the user has insufficient NexusToken tokens
+        if (balanceOf(msg.sender) < amount) revert NexusToken__InsufficientBalance();
 
         // Revert if the user has insufficient deposit balance of the fan token
         if (s_userDeposits[msg.sender][fanTokenAddress] < amount)
-            revert Nexus__InsufficientBalance();
+            revert NexusToken__InsufficientBalance();
 
         // Call internal function to handle the redemption logic
         _redeem(fanTokenAddress, amount);
 
-        // Burn the equivalent amount of Nexus tokens from the user
+        // Burn the equivalent amount of NexusToken tokens from the user
         _burn(msg.sender, amount);
 
         // Emit the TokenRedeemed event
@@ -124,7 +124,7 @@ contract Nexus is CAP223 {
 
     /// @notice Internal function to handle the redemption logic
     /// @param fanTokenAddress The address of the supported fan token
-    /// @param amount The amount of Nexus tokens to redeem
+    /// @param amount The amount of NexusToken tokens to redeem
     function _redeem(address fanTokenAddress, uint256 amount) internal {
         // Decrement the user's deposit balance for the specified fan token
         s_userDeposits[msg.sender][fanTokenAddress] -= amount;
@@ -134,7 +134,7 @@ contract Nexus is CAP223 {
         // Attempt to transfer the fan tokens from this contract to the user
         bool success = IERC20(fanTokenAddress).transfer(msg.sender, amount);
         // Revert if the transfer fails
-        if (!success) revert Nexus__RedemptionFailed();
+        if (!success) revert NexusToken__RedemptionFailed();
     }
 
     /// @notice Function to add a supported token after deployment
