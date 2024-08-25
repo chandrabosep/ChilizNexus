@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./IERC223.sol";
+import "./ICAP223.sol";
 
 library Address {
     /// @dev Returns true if `account` is a contract.
@@ -15,7 +15,7 @@ library Address {
     }
 }
 
-abstract contract IERC223Recipient {
+abstract contract ICAP223Recipient {
     /// @notice Function to handle the receipt of ERC223 tokens.
     /// @param _from Address of the sender.
     /// @param _value Amount of tokens sent.
@@ -28,7 +28,7 @@ abstract contract IERC223Recipient {
     ) public virtual returns (bytes4);
 }
 
-abstract contract ERC223 is IERC223, IERC223Recipient {
+abstract contract CAP223 is ICAP223, ICAP223Recipient {
     using Address for address;
 
     /// @notice Mapping to keep track of balances.
@@ -100,7 +100,7 @@ abstract contract ERC223 is IERC223, IERC223Recipient {
         _balances[msg.sender] -= _value;
         _balances[_to] += _value;
         if (_to.isContract()) {
-            IERC223Recipient(_to).tokenReceived(msg.sender, _value, _data);
+            ICAP223Recipient(_to).tokenReceived(msg.sender, _value, _data);
         }
         emit Transfer(msg.sender, _to, _value, _data);
         return true;
@@ -118,7 +118,7 @@ abstract contract ERC223 is IERC223, IERC223Recipient {
         _balances[msg.sender] -= _value;
         _balances[_to] += _value;
         if (_to.isContract()) {
-            IERC223Recipient(_to).tokenReceived(msg.sender, _value, _empty);
+            ICAP223Recipient(_to).tokenReceived(msg.sender, _value, _empty);
         }
         emit Transfer(msg.sender, _to, _value, _empty);
         return true;

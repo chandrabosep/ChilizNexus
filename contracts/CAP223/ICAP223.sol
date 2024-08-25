@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-interface IERC223 {
+interface ICAP223 {
     /// @notice Returns the balance of the specified address.
     /// @param account The address to query the balance of.
     /// @return The balance of the specified address.
@@ -18,7 +18,11 @@ interface IERC223 {
     /// @param amount The amount to be transferred.
     /// @param data Additional data to send with the transfer.
     /// @return A boolean indicating whether the operation was successful.
-    function transfer(address to, uint256 amount, bytes calldata data) external returns (bool);
+    function transfer(
+        address to,
+        uint256 amount,
+        bytes calldata data
+    ) external returns (bool);
 
     /// @notice Returns the total supply of the token.
     /// @return The total supply.
@@ -29,5 +33,10 @@ interface IERC223 {
     /// @param to The address to which the tokens were transferred.
     /// @param value The amount of tokens transferred.
     /// @param data Additional data sent with the transfer.
-    event Transfer(address indexed from, address indexed to, uint256 value, bytes indexed data);
+    event Transfer(
+        address indexed from,
+        address indexed to,
+        uint256 value,
+        bytes indexed data
+    );
 }
