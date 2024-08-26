@@ -8,8 +8,10 @@ export default function Bridge() {
 	return (
 		<div className="flex flex-col py-20 gap-y-10 w-full h-full max-w-screen-2xl">
 			<div className="flex items-center justify-between">
-				<h2 className={`text-3xl text-secondaryColor font-semibold mx-auto`}>
-					Bridge your Fan Tokens to ERC20s
+				<h2
+					className={`text-3xl text-secondaryColor font-semibold mx-auto`}
+				>
+					{`Bridge any fan tokens(CAP20) to Nexus tokens(CAP223)`}
 				</h2>
 			</div>
 			<div className="max-w-screen-md mx-auto flex flex-col gap-y-10">
@@ -26,12 +28,12 @@ export default function Bridge() {
 						<Input id="to" placeholder="0.0" />
 					</div>
 				</div>
-				<Button className="w-full bg-primaryColor hover:bg-primaryColor/90">Convert</Button>
+				<Button className="w-full bg-primaryColor hover:bg-primaryColor/90">
+					Convert
+				</Button>
 				<div className="space-y-2 text-center">
-					<h3 className="text-lg font-medium">Supported Tokens</h3>
-					<p className="text-muted-foreground">
-						ERC20, BEP20, MATIC, AVAX, SOL, and more.
-					</p>
+					<h3 className="text-lg font-medium">Supported fan Tokens</h3>
+					<p className="text-muted-foreground">BAR, PSG, JUV</p>
 				</div>
 			</div>
 		</div>
