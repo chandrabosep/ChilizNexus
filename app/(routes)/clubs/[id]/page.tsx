@@ -10,6 +10,7 @@ import {
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Overview from "@/components/Overview";
+import ClubSub from "@/components/ClubSub";
 
 export default function ClubInfo() {
 	return (
@@ -95,7 +96,7 @@ export default function ClubInfo() {
 							value="subscribe"
 							className="border rounded-xl p-4 px-5 mt-5"
 						>
-							Change your password here.
+							<ClubSub />
 						</TabsContent>
 						<TabsContent
 							value="chat"
