@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import EventCard from "./EventCard";
 import { client } from "@/lib/sanity";
+import CommunityCard from "./CommunityCard";
 
 export default function Events() {
 	const [events, setEvents] = useState([]);
@@ -49,7 +50,11 @@ export default function Events() {
 						{`Community Events (local)`}
 					</h6>
 					<div className="flex flex-wrap gap-6">
-						{/* <EventCard /> */}
+					{commEvents.map((event, index) => (
+							<div key={index}>
+								<CommunityCard data={event} />
+							</div>
+						))}
 					</div>
 				</div>
 			</div>

@@ -10,7 +10,7 @@ export default function EventCard({ data }: any) {
 			<Card className="flex rounded-lg overflow-hidden shadow-lg h-[20rem] w-1/2">
 				<div className="relative h-full w-1/2">
 					<Image
-						src="/placeholder.jpg"
+						src="/eve.jpg"
 						alt="Event Image"
 						layout="fill"
 						objectFit="cover"
@@ -25,7 +25,9 @@ export default function EventCard({ data }: any) {
 							</h2>
 							<div className="flex items-center gap-2 text-muted-foreground">
 								<CalendarIcon className="w-5 h-5" />
-								<span>{data.date}</span>
+								<span>
+									{new Date(data.date).toDateString()}
+								</span>
 							</div>
 						</div>
 						<div className="flex items-center gap-2 text-muted-foreground">
@@ -35,7 +37,7 @@ export default function EventCard({ data }: any) {
 							</span>
 						</div>
 						<div className="flex items-center gap-2 text-muted-foreground">
-							<MapPinIcon className="size-10" />
+							<MapPinIcon className="size-6" />
 							<span className="line-clamp-1">{data.address}</span>
 						</div>
 						<div className="prose text-muted-foreground">
