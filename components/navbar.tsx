@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 import Image from "next/image";
 
-const links = ["clubs", "events", "bridge"];
+const links = ["clubs", "events", "bridge","fun"];
 
 export default function Navbar() {
 	const { address, isConnected } = useAccount();
