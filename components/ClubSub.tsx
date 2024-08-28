@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { BellIcon } from "lucide-react";
 
-export default function ClubSub() {
+export default function ClubSub({data}: any) {
 	const showNotification = true;
 	return (
 		<div>

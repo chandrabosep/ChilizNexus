@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+"use client";
 import {
 	CalendarIcon,
 	LucideLink,
@@ -11,9 +11,27 @@ import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Overview from "@/components/Overview";
 import ClubSub from "@/components/ClubSub";
-import Events from "@/components/Events";
+import ClubEvents from "@/components/ClubEvents";
+import { useEffect, useState } from "react";
+import { client } from "@/lib/sanity";
+import { useParams } from "next/navigation";
 
 export default function ClubInfo() {
+	const slug = useParams();
+	const [data, setData] = useState<any>([]);
+
+	useEffect(() => {
+		async function getProjects() {
+			const query = `*[_type == "club" && slug.current == "${slug.slug}"]{
+							...,
+							events[]->,
+							communityEvents[]->
+							}[0]`;
+			const data = await client.fetch(query);
+			setData(data);
+		}
+		getProjects();
+	}, [slug]);
 	return (
 		<div>
 			<div className="flex flex-col justify-center gap-10 w-full py-12 md:py-16 lg:py-20">
@@ -25,7 +43,7 @@ export default function ClubInfo() {
 								className="h-8 w-8 text-primaryColor"
 							/>
 							<h1 className="text-3xl font-bold text-primaryColor">
-								FC Barcelona
+								{data?.name}
 							</h1>
 						</div>
 						<div className="flex items-center gap-x-6 brightness-0">
@@ -45,13 +63,7 @@ export default function ClubInfo() {
 						</div>
 					</div>
 					<p className="text-muted-foreground max-w-[700px]">
-						{`	Join the on-chain community of FC Barcelona fans, where
-						the spirit of the Blaugrana lives on the blockchain.
-						Connect with fellow supporters, participate in exclusive
-						digital events, and engage in decentralized voting on
-						club decisions. Whether it's celebrating victories or
-						influencing future projects, this is the ultimate
-						digital hub for true Barça enthusiasts`}
+						{data?.description}
 					</p>
 				</div>
 
@@ -60,19 +72,19 @@ export default function ClubInfo() {
 						<div className="flex  gap-3">
 							<UsersIcon className="h-5 w-5 text-muted-foreground" />
 							<span className="text-muted-foreground">
-								150M+ Fans
+								{data?.fans}M+ Fans
 							</span>
 						</div>
 						<div className="flex  gap-3">
 							<StarIcon className="h-5 w-5 text-muted-foreground" />
 							<span className="text-muted-foreground">
-								124M Holders
+								{data?.holders}M+ Holders
 							</span>
 						</div>
 						<div className="flex  gap-3">
 							<CalendarIcon className="h-5 w-5 text-muted-foreground" />
 							<span className="text-muted-foreground">
-								Founded in 2020
+								Founded in 2024
 							</span>
 						</div>
 					</div>
@@ -109,13 +121,13 @@ export default function ClubInfo() {
 							value="overview"
 							className="border rounded-xl p-4 px-5 mt-5"
 						>
-							<Overview />
+							<Overview data={data} />
 						</TabsContent>
 						<TabsContent
 							value="subscribe"
 							className="border rounded-xl p-4 px-5 mt-5"
 						>
-							<ClubSub />
+							<ClubSub data={data} />
 						</TabsContent>
 						<TabsContent
 							value="chat"
@@ -129,7 +141,7 @@ export default function ClubInfo() {
 							value="events"
 							className="border rounded-xl p-4 px-5 mt-5"
 						>
-							<Events />
+							<ClubEvents data={data} />
 						</TabsContent>
 					</Tabs>
 				</div>

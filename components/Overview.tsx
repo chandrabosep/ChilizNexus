@@ -2,29 +2,15 @@ import { LucideLink, User2Icon } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
-export default function Overview() {
+export default function Overview({ data }: any) {
 	return (
 		<>
 			<div className="flex flex-col gap-y-8">
 				<div className="">
 					<h2 className="text-2xl font-bold mb-4">
-						About FC Barcelona
+						About {data.name}
 					</h2>
-					<p className="text-muted-foreground">
-						{`Acme Inc. is a leading provider of
-        innovative products and services that help
-        businesses and individuals achieve their
-        goals. Our mission is to empower our
-        customers with the tools and resources they
-        need to succeed in today's fast-paced world.`}
-					</p>
-					<p className="text-muted-foreground mt-4">
-						Founded in 2015, Acme Inc. has grown to become a trusted
-						partner for thousands of customers around the world. Our
-						team of dedicated professionals is committed to
-						delivering exceptional service and support, and we are
-						constantly innovating to stay ahead of the curve.
-					</p>
+					<p className="text-muted-foreground">{data.description}</p>
 				</div>
 				<div className="flex flex-col gap-y-3 h-fit">
 					<h6 className="text-xl font-bold text-black/80">Socials</h6>

@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 export default function CommunityCard({ data }: any) {
 	return (
 		<>
-			<Card className="flex rounded-lg overflow-hidden shadow-lg h-[20rem] w-1/2">
+			<Card className="flex rounded-lg overflow-hidden shadow-lg h-[20rem] w-full min-w-[40rem]">
 				<div className="relative h-full w-1/2">
 					<Image
 						src="/comm.jpg"
@@ -21,7 +21,7 @@ export default function CommunityCard({ data }: any) {
 					<div className="space-y-4 h-fit">
 						<div>
 							<h2 className="text-xl font-bold pb-2">
-								{data.name}
+								{data?.name}
 							</h2>
 							<div className="flex items-center gap-2 text-muted-foreground">
 								<CalendarIcon className="w-5 h-5" />
