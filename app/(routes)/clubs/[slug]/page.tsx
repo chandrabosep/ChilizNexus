@@ -4,7 +4,6 @@ import {
 	LucideLink,
 	MountainIcon,
 	StarIcon,
-	User2Icon,
 	UsersIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -25,7 +24,8 @@ export default function ClubInfo() {
 			const query = `*[_type == "club" && slug.current == "${slug.slug}"]{
 							...,
 							events[]->,
-							communityEvents[]->
+							communityEvents[]->,
+							notifications[]->
 							}[0]`;
 			const data = await client.fetch(query);
 			setData(data);
