@@ -6,6 +6,7 @@
 html,
 body {
 	@apply h-full w-full px-4 max-w-screen-2xl mx-auto;
+	cursor: url("../public/cursor.svg"), auto;
 }
 
 @layer base {
