@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import urlBuilder from "@sanity/image-url";
+import { urlFor } from "@/lib/sanity";
 
 export default function ClubCard({ data }: any) {
 	const router = useRouter();
@@ -38,7 +40,7 @@ export default function ClubCard({ data }: any) {
 		>
 			{!flipped && (
 				<Image
-					src={data.img || "/placeholder.jpg"}
+					src={urlFor(data.image)?.url() || "/placeholder.jpg"}
 					alt={"Project Image"}
 					width={400}
 					height={200}
@@ -55,13 +57,13 @@ export default function ClubCard({ data }: any) {
 				{!flipped ? (
 					<>
 						<div className="flex items-center justify-between">
-							<h3 className="text-xl font-bold">{data.title}</h3>
-							<Link href={`/clubs/1`}>
+							<h3 className="text-xl font-bold">{data.name}</h3>
+							<Link href={`/clubs/${data.slug.current}`}>
 								<SquareArrowOutUpRight className="w-4 h-4 text-primaryColor" />
 							</Link>
 						</div>
 						<p className="text-muted-foreground line-clamp-4 leading-7 min-h-20">
-							{data.desc}
+							{data.description}
 						</p>
 					</>
 				) : (
@@ -71,14 +73,14 @@ export default function ClubCard({ data }: any) {
 								ERC20
 							</p>
 							<h3 className="text-xl font-bold pt-4">
-								{data.title}
+								{data.name}
 							</h3>
 
 							<div className="grid grid-cols-2 items-center justify-between py-10">
 								<div className="mx-auto text-center">
 									<h6 className="text-xl font-bold">Fans</h6>
 									<p className="text-muted-foreground text-3xl">
-										{data.fans}+
+										{data.fans}M+
 									</p>
 								</div>
 								<div className="mx-auto text-center">
@@ -86,7 +88,7 @@ export default function ClubCard({ data }: any) {
 										Holders
 									</h6>
 									<p className="text-muted-foreground text-3xl">
-										{data.holders}+
+										{data.holders}M+
 									</p>
 								</div>
 							</div>
