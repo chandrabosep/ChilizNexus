@@ -1,19 +1,10 @@
 import React from "react";
 import { Card, CardContent } from "./ui/card";
-import {
-	Badge,
-	CalendarIcon,
-	ClockIcon,
-	CurrencyIcon,
-	MapPinIcon,
-	SquareArrowOutUpRight,
-	Triangle,
-} from "lucide-react";
+import { CalendarIcon, ClockIcon, MapPinIcon } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { Button } from "./ui/button";
 
-export default function EventCard() {
+export default function EventCard({ data }: any) {
 	return (
 		<>
 			<Card className="flex rounded-lg overflow-hidden shadow-lg h-[20rem] w-1/2">
@@ -30,29 +21,25 @@ export default function EventCard() {
 					<div className="space-y-4 h-fit">
 						<div>
 							<h2 className="text-xl font-bold pb-2">
-								Sustainable Design Conference
+								{data.name}
 							</h2>
 							<div className="flex items-center gap-2 text-muted-foreground">
 								<CalendarIcon className="w-5 h-5" />
-								<span>August 15, 2024</span>
+								<span>{data.date}</span>
 							</div>
 						</div>
 						<div className="flex items-center gap-2 text-muted-foreground">
 							<ClockIcon className="w-5 h-5" />
-							<span>9:00 AM - 5:00 PM</span>
+							<span>
+								{data.from} - {data.to || "TBD"}
+							</span>
 						</div>
 						<div className="flex items-center gap-2 text-muted-foreground">
-							<MapPinIcon className="w-5 h-5" />
-							<span>123 Main St, Anytown USA</span>
+							<MapPinIcon className="size-10" />
+							<span className="line-clamp-1">{data.address}</span>
 						</div>
 						<div className="prose text-muted-foreground">
-							<p className="line-clamp-3">
-								Join us for a day-long conference exploring the
-								latest trends and innovations in sustainable
-								design. Hear from industry leaders, participate
-								in workshops, and network with like-minded
-								professionals.
-							</p>
+							<p className="line-clamp-3">{data.description}</p>
 						</div>
 					</div>
 					<Button className="flex items-end w-full bg-primaryColor hover:bg-primaryColor h-fit">
