@@ -1,7 +1,271 @@
+import {
+	CheckIcon,
+	Component,
+	Gem,
+	PartyPopper,
+	ScrollText,
+	Users,
+	Vault,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import erthonline from "../../../public/erthonline.png";
+import blob from "../../../public/blob.svg";
+import token from "../../../public/token.gif";
+import { Button } from "@/components/ui/button";
+
 export default function Home() {
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-between p-24">
-			Home
+		<main className="flex min-h-screen flex-col items-center justify-between p-10">
+			<Image
+				src={blob}
+				alt="alt"
+				className="absolute -z-10 right-0 top-0"
+			/>
+
+			<div className="flex flex-row items-center justify-between">
+				<div className="py-10 md:py-40 flex flex-col gap-y-10">
+					<div
+						className={`text-4xl md:text-5xl font-bold space-y-4 text-[#610287]`}
+					>
+						<h1>
+							<span className="relative">
+								{/* <Image src="/element.svg" className="w-fit absolute -rotate-90 -top-10 -left-10" alt="alt" width={600} height={600} /> */}
+								ChillizNexus:
+							</span>{" "}
+							Transforming{" "}
+						</h1>
+						<h1 className="bg-primaryColor/30 w-fit py-1 pt-2 px-6 rounded-full">
+							Fan Engagement
+						</h1>
+					</div>
+					<p className={`text-2xl max-w-screen-sm`}>
+						Elevate your sports experience with ChilizNexus. Engage,
+						interact, and govern—all in one blockchain-powered
+						platform.
+					</p>
+					<Link href="/clubs">
+						<Button className="px-10 py-6 bg-primaryColor hover:bg-primaryColor/80 text-white text-lg rounded-full">
+							Get Started Now
+						</Button>
+					</Link>
+				</div>
+				<Image
+					src={token}
+					alt="Spaceship"
+					className="w-[45%] hidden md:block max-w-[50%]"
+				/>
+			</div>
+			<div>
+				<h2
+					className={` text-6xl font-bold text-[#610287] underline decoration-wavy decoration-primaryColor decoration-2 underline-offset-8 w-fit`}
+				>
+					How it works
+				</h2>
+				<section className="w-full py-8 md:py-10 lg:py-16">
+					<div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-20">
+						<div className="space-y-4 max-w-2xl">
+							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
+								Submit Your Proposal
+							</div>
+							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
+								Single Proposals Across Blockchains
+							</h2>
+							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+								Submit proposals on Celo, Optimism, Base, and
+								Mode blockchains. Manage your funds and
+								contributions across multiple networks.
+							</p>
+							<div className="grid gap-2">
+								<div className="flex items-center gap-2">
+									<CheckIcon className="h-5 w-5 text-green-500" />
+									<p className="text-sm text-muted-foreground">
+										Create a single proposal
+									</p>
+								</div>
+								<div className="flex items-center gap-2">
+									<CheckIcon className="h-5 w-5 text-green-500" />
+									<p className="text-sm text-muted-foreground">
+										Manage funds across blockchains
+									</p>
+								</div>
+							</div>
+						</div>
+						<div className="space-y-4 max-w-2xl">
+							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
+								Fund Projects as a Sower
+							</div>
+							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
+								Provide Essential Funding
+							</h2>
+							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+								Contribute funds that act like essential
+								elements helping projects grow. Your
+								contributions are securely deposited in the
+								project vault.
+							</p>
+							<div className="grid gap-2">
+								<div className="flex items-center gap-2">
+									<CheckIcon className="h-5 w-5 text-green-500" />
+									<p className="text-sm text-muted-foreground">
+										Provide essential funding
+									</p>
+								</div>
+								<div className="flex items-center gap-2">
+									<CheckIcon className="h-5 w-5 text-green-500" />
+									<p className="text-sm text-muted-foreground">
+										Secure deposits in project vault
+									</p>
+								</div>
+							</div>
+						</div>
+						<div className="space-y-4 max-w-2xl">
+							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
+								Get a unique NFT
+							</div>
+							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
+								Showcase Contributions with NFT
+							</h2>
+							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+								Have your contributions securely deposited in
+								the project vault and earn Root Tokens as a
+								reward.
+							</p>
+							<div className="grid gap-2">
+								<div className="flex items-center gap-2">
+									<CheckIcon className="h-5 w-5 text-green-500" />
+									<p className="text-sm text-muted-foreground">
+										Secure deposits in project vault
+									</p>
+								</div>
+								<div className="flex items-center gap-2">
+									<CheckIcon className="h-5 w-5 text-green-500" />
+									<p className="text-sm text-muted-foreground">
+										Earn Root Tokens as a reward
+									</p>
+								</div>
+							</div>
+						</div>
+						<div className="space-y-4 max-w-2xl">
+							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
+								Monitor your Funds
+							</div>
+							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
+								Community support across the world
+							</h2>
+							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+								Get your projects the reconization they need
+								from around the world and chains
+							</p>
+							<div className="grid gap-2">
+								<div className="flex items-center gap-2">
+									<CheckIcon className="h-5 w-5 text-green-500" />
+									<p className="text-sm text-muted-foreground">
+										Support public projects
+									</p>
+								</div>
+								<div className="flex items-center gap-2">
+									<CheckIcon className="h-5 w-5 text-green-500" />
+									<p className="text-sm text-muted-foreground">
+										Fund projects as a sower
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</div>
+			<div className="w-full flex flex-col gap-y-14 pb-16 pt-6	">
+				<h2
+					className={`text-6xl font-bold text-[#610287] underline decoration-wavy decoration-primaryColor decoration-2 underline-offset-8  w-fit`}
+				>
+					Features
+				</h2>
+				<div className="grid gap-16 lg:grid-cols-2 xl:grid-cols-3">
+					{[
+						{
+							title: "Project Proposal Funding",
+							description:
+								"Secure funding for your project with a streamlined, on-chain proposal process that connects you directly with potential funders.",
+							icon: <Gem />,
+						},
+						{
+							title: "Interoperable On-Chain Funding",
+							description:
+								"Leverage the power of superchain maxis (OP, BASE, MODE) to access multi-chain funding opportunities seamlessly.",
+							icon: <ScrollText />,
+						},
+						{
+							title: "Community Pool Funding",
+							description:
+								"Support underfunded or emerging projects through pooled funding, enabling collective growth and community-backed initiatives.",
+							icon: <Users />,
+						},
+						{
+							title: "ERC4626A Vault Standard",
+							description:
+								"Experience secure on-chain funding with SeedSphere's ERC4626A Vault, inspired by ERC4626, ERC7535, ERC721A, ERC1155A for optimal efficiency and security.",
+							icon: <Vault />,
+						},
+						{
+							title: "Community-Driven Project Popularity",
+							description:
+								"Boost your project’s visibility and chances of success through community voting, driving engagement and support.",
+							icon: <PartyPopper />,
+						},
+						{
+							title: "Unique NFT for Funders",
+							description:
+								"Showcase your contributions with unique NFTs received for your total funding, easily shareable on platforms like X and Farcaster.",
+							icon: <Component />,
+						},
+					].map((feature) => (
+						<div key={feature.title} className="grid gap-4">
+							<div className="flex items-start gap-4">
+								<div className="bg-muted rounded-md p-2 text-primary">
+									{feature.icon}
+								</div>
+								<div className="space-y-1">
+									<h3 className="text-2xl font-bold">
+										{feature.title}
+									</h3>
+									<p className="text-muted-foreground text-lg">
+										{feature.description}
+									</p>
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+			<div className="flex items-center justify-between border-t w-full pt-4">
+				<div className="flex items-center gap-2">
+					<Image
+						src={erthonline}
+						alt="alt"
+						className="size-6 rounded-full"
+					/>
+					<p className="text-lg font-bold pt-1">
+						Built at EthOnline24
+					</p>
+				</div>
+				<div className="flex items-center gap-4 text-lg font-medium">
+					Built by{" "}
+					<Link
+						href={"https://chandrabose.xyz"}
+						className="border-b border-primaryColor leading-5"
+					>
+						Chandra Bose
+					</Link>
+					&
+					<Link
+						href={"https://x.com/muja002"}
+						className="border-b border-primaryColor leading-5"
+					>
+						Mujahid
+					</Link>
+				</div>
+			</div>
 		</main>
 	);
 }
