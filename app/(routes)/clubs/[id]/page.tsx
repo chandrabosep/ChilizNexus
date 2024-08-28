@@ -79,13 +79,31 @@ export default function ClubInfo() {
 				</div>
 				<div className="w-full mt-12">
 					<Tabs defaultValue="overview">
-						<TabsList className="border-b">
-							<TabsTrigger value="overview">Overview</TabsTrigger>
-							<TabsTrigger value="subscribe">
-								Subscribe
+						<TabsList className="border-b w-fit bg-primaryColor/60 text-white/80 h-11">
+							<TabsTrigger
+								value="overview"
+								className="data-[state=active]:bg-primaryColor data-[state=active]:text-white"
+							>
+								Overview
 							</TabsTrigger>
-							<TabsTrigger value="chat">Chat</TabsTrigger>
-							<TabsTrigger value="events">Events</TabsTrigger>
+							<TabsTrigger
+								value="events"
+								className="data-[state=active]:bg-primaryColor data-[state=active]:text-white"
+							>
+								Events
+							</TabsTrigger>
+							<TabsTrigger
+								value="subscribe"
+								className="data-[state=active]:bg-primaryColor data-[state=active]:text-white"
+							>
+								Subscription
+							</TabsTrigger>
+							<TabsTrigger
+								value="chat"
+								className="data-[state=active]:bg-primaryColor data-[state=active]:text-white"
+							>
+								Chat
+							</TabsTrigger>
 						</TabsList>
 						<TabsContent
 							value="overview"
