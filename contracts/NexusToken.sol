@@ -41,11 +41,11 @@ contract NexusToken is CAP223 {
     );
 
     /// @notice Constructor to initialize the contract with supported fan tokens
-    constructor() CAP223("ChilizNexusTokenToken", "CNT", 0) {
+    constructor() CAP223("ChilizNexusToken", "CNT", 0) {
         // Initialize the supported tokens mapping with predefined fan tokens
-        s_supportedFanTokens[0x63667746A7A005E45B1fffb13a78d0331065Ff7f] = true; // testBAR
-        s_supportedFanTokens[0xa4bf4104ec0109591077Ee5F4a2bFD13dEE1Bdf8] = true; // testPSG
-        s_supportedFanTokens[0x1ED7858225dF2a3365d07dD7C08d165D6A399bE6] = true; // testJUV
+        // s_supportedFanTokens[0x63667746A7A005E45B1fffb13a78d0331065Ff7f] = true; // testBAR
+        // s_supportedFanTokens[0xa4bf4104ec0109591077Ee5F4a2bFD13dEE1Bdf8] = true; // testPSG
+        // s_supportedFanTokens[0x1ED7858225dF2a3365d07dD7C08d165D6A399bE6] = true; // testJUV
     }
 
     /// @notice Function to mint NexusToken tokens by depositing supported fan tokens
@@ -191,25 +191,25 @@ contract NexusToken is CAP223 {
     }
 
     /// @notice Function to get the total supply of a specific fan token
-    /// @param fanfanTokenAddress The address of the fan token
+    /// @param fanTokenAddress The address of the fan token
     /// @return The total supply of the specified fan token
-    function getFanTokenSupply(address fanfanTokenAddress)
+    function getFanTokenSupply(address fanTokenAddress)
         public
         view
         returns (uint256)
     {
-        return s_fanTokenSupply[fanfanTokenAddress];
+        return s_fanTokenSupply[fanTokenAddress];
     }
 
     /// @notice Function to get the deposit balance of a user for a specific fan token
-    /// @param fanfanTokenAddress The address of the fan token
+    /// @param fanTokenAddress The address of the fan token
     /// @param userAddress The address of the user
     /// @return The deposit balance of the specified user for the specified fan token
-    function getUserDeposits(address fanfanTokenAddress, address userAddress)
+    function getUserDeposits(address fanTokenAddress, address userAddress)
         public
         view
         returns (uint256)
     {
-        return s_userDeposits[fanfanTokenAddress][userAddress];
+        return s_userDeposits[fanTokenAddress][userAddress];
     }
 }
