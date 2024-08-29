@@ -37,6 +37,10 @@ contract CNParisSaintGermai is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
         _burn(from, amount);
     }
 
+    function decimals() public view virtual override returns (uint8) {
+        return 0;
+    }
+
     // Override
     function _update(
         address from,

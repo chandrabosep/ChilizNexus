@@ -34,6 +34,10 @@ contract CNFCBarcelona is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
         _burn(from, amount);
     }
 
+    function decimals() public view virtual override returns (uint8) {
+        return 0;
+    }
+
     // Override
     function _update(
         address from,
@@ -43,7 +47,4 @@ contract CNFCBarcelona is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
         super._update(from, to, value);
     }
 
-    function decimals() public view virtual override returns (uint8) {
-        return 0;
-    }
 }

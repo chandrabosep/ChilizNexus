@@ -33,6 +33,10 @@ contract CNJuventus is ERC20, ERC20Burnable, ERC20Pausable, Ownable {
     function burn(address from, uint256 amount) public onlyOwner {
         _burn(from, amount);
     }
+    
+    function decimals() public view virtual override returns (uint8) {
+        return 0;
+    }
 
     // Override
     function _update(
