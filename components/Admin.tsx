@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +24,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { client } from "@/lib/sanity";
+import { v4 as uuidv4 } from "uuid";
 
 const formSchema = z.object({
 	name: z.string().min(1, { message: "Name is required" }),
@@ -74,7 +74,11 @@ export default function Admin({ data }: any) {
 					.patch(data._id)
 					.setIfMissing({ events: [] })
 					.insert("after", "events[-1]", [
-						{ _type: "reference", _ref: createdEvent._id },
+						{
+							_key: uuidv4(),
+							_type: "reference",
+							_ref: createdEvent._id,
+						},
 					])
 					.commit({
 						headers: {

@@ -20,9 +20,9 @@ export default function ClubEvents({ data }: any) {
 					<h6 className="text-xl text-primaryColor underline decoration-secondaryColor decoration-wavy underline-offset-4 w-fit font-semibold">
 						Live Events
 					</h6>
-					<div className="flex flex-wrap gap-6 w-full">
+					<div className="flex flex-wrap gap-6">
 						{data.events?.map((event: any, index: number) => (
-							<div key={index} className="w-full">
+							<div key={index}>
 								<EventCard data={event} />
 							</div>
 						))}

@@ -15,6 +15,7 @@ import {
 import { Input } from "./ui/input";
 import { client } from "@/lib/sanity";
 import { Textarea } from "./ui/textarea";
+import { v4 as uuidv4 } from "uuid";
 
 const formSchema = z.object({
 	name: z.string().min(1, { message: "Name is required" }),
@@ -66,7 +67,11 @@ export default function CreateCommEvent({ data }: any) {
 					.patch(data._id)
 					.setIfMissing({ communityEvents: [] })
 					.insert("after", "communityEvents[-1]", [
-						{ _type: "reference", _ref: createdEvent._id },
+						{
+							_key: uuidv4(),
+							_type: "reference",
+							_ref: createdEvent._id,
+						},
 					])
 					.commit({
 						headers: {
