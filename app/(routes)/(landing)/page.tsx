@@ -2,6 +2,9 @@ import {
 	CheckIcon,
 	Component,
 	Gem,
+	Gift,
+	Link2,
+	LinkIcon,
 	PartyPopper,
 	ScrollText,
 	Users,
@@ -58,116 +61,116 @@ export default function Home() {
 			</div>
 			<div>
 				<h2
-					className={` text-6xl font-bold text-[#610287] underline decoration-wavy decoration-primaryColor decoration-2 underline-offset-8 w-fit`}
+					className={`text-6xl font-bold text-[#610287] underline decoration-wavy decoration-primaryColor decoration-2 underline-offset-8 w-fit`}
 				>
-					How it works
+					How it Works
 				</h2>
 				<section className="w-full py-8 md:py-10 lg:py-16">
 					<div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-20">
 						<div className="space-y-4 max-w-2xl">
 							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
-								Submit Your Proposal
+								Engage in Events
 							</div>
 							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-								Single Proposals Across Blockchains
+								Participate in Exciting Fan Activities
 							</h2>
 							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-								Submit proposals on Celo, Optimism, Base, and
-								Mode blockchains. Manage your funds and
-								contributions across multiple networks.
+								Join live, virtual, or community events hosted
+								by your favorite teams and connect with other
+								passionate fans.
 							</p>
 							<div className="grid gap-2">
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Create a single proposal
+										Attend exclusive live sessions
 									</p>
 								</div>
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Manage funds across blockchains
+										Participate in global virtual events
 									</p>
 								</div>
 							</div>
 						</div>
 						<div className="space-y-4 max-w-2xl">
 							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
-								Fund Projects as a Sower
+								Get Notified
 							</div>
 							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-								Provide Essential Funding
+								Stay Connected with Your Club
 							</h2>
 							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-								Contribute funds that act like essential
-								elements helping projects grow. Your
-								contributions are securely deposited in the
-								project vault.
+								Opt into notifications to receive real-time
+								updates about events, team news, and exclusive
+								content directly from your favorite clubs.
 							</p>
 							<div className="grid gap-2">
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Provide essential funding
+										Subscribe to club alerts
 									</p>
 								</div>
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Secure deposits in project vault
+										Never miss important updates
 									</p>
 								</div>
 							</div>
 						</div>
 						<div className="space-y-4 max-w-2xl">
 							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
-								Get a unique NFT
+								Earn and Use Tokens
 							</div>
 							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-								Showcase Contributions with NFT
+								Unlock Rewards and Influence
 							</h2>
 							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-								Have your contributions securely deposited in
-								the project vault and earn Root Tokens as a
-								reward.
+								{`Participate in events to earn NexusTokens, which
+								can be used to vote on club decisions, giving
+								you a voice in your team's future.`}
 							</p>
 							<div className="grid gap-2">
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Secure deposits in project vault
+										Earn tokens through participation
 									</p>
 								</div>
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Earn Root Tokens as a reward
+										Influence club decisions
 									</p>
 								</div>
 							</div>
 						</div>
 						<div className="space-y-4 max-w-2xl">
 							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
-								Monitor your Funds
+								Showcase Your Participation
 							</div>
 							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-								Community support across the world
+								Secure Your Memories
 							</h2>
 							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-								Get your projects the reconization they need
-								from around the world and chains
+								Receive non-transferable Soulbound Tokens (SBTs)
+								as proof of your participation in events, making
+								each experience unique and personal.
 							</p>
 							<div className="grid gap-2">
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Support public projects
+										Collect SBTs for each event
 									</p>
 								</div>
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Fund projects as a sower
+										Share your event memories online
 									</p>
 								</div>
 							</div>
@@ -184,41 +187,48 @@ export default function Home() {
 				<div className="grid gap-16 lg:grid-cols-2 xl:grid-cols-3">
 					{[
 						{
-							title: "Project Proposal Funding",
+							title: "Event Creation & Management",
 							description:
-								"Secure funding for your project with a streamlined, on-chain proposal process that connects you directly with potential funders.",
+								"ChilizNexus enables fans to participate in live, virtual, and community events, enhancing engagement with their favorite teams.",
 							icon: <Gem />,
 						},
 						{
-							title: "Interoperable On-Chain Funding",
+							title: "Subscriptions & Notifications",
 							description:
-								"Leverage the power of superchain maxis (OP, BASE, MODE) to access multi-chain funding opportunities seamlessly.",
+								"Stay updated with real-time club news and event announcements through the platform’s subscription and notification system.",
 							icon: <ScrollText />,
 						},
 						{
-							title: "Community Pool Funding",
+							title: "Tokenized Rewards & Governance",
 							description:
-								"Support underfunded or emerging projects through pooled funding, enabling collective growth and community-backed initiatives.",
+								"Earn NexusTokens by participating in events and use them to vote on club decisions, fostering community and ownership.",
 							icon: <Users />,
 						},
 						{
-							title: "ERC4626A Vault Standard",
+							title: "Secure Ticketing",
 							description:
-								"Experience secure on-chain funding with SeedSphere's ERC4626A Vault, inspired by ERC4626, ERC7535, ERC721A, ERC1155A for optimal efficiency and security.",
+								"ChilizNexus issues non-transferable Soulbound Tokens (SBTs) as proof of participation, creating a personal and memorable fan experience.",
 							icon: <Vault />,
 						},
 						{
-							title: "Community-Driven Project Popularity",
+							title: "On-Chain Attestations",
 							description:
-								"Boost your project’s visibility and chances of success through community voting, driving engagement and support.",
-							icon: <PartyPopper />,
+								"All events and interactions are recorded on-chain, providing transparent and immutable verification of fan participation.",
+							icon: <LinkIcon />,
 						},
 						{
-							title: "Unique NFT for Funders",
+							title: "TokenDrops & Incentives",
 							description:
-								"Showcase your contributions with unique NFTs received for your total funding, easily shareable on platforms like X and Farcaster.",
-							icon: <Component />,
+								"Fans holding event tickets are eligible for token drops, adding extra rewards for active participation in the ChilizNexus ecosystem.",
+							icon: <Gift />,
 						},
+
+						// {
+						// 	title: "Unique NFT for Funders",
+						// 	description:
+						// 		"Showcase your contributions with unique NFTs received for your total funding, easily shareable on platforms like X and Farcaster.",
+						// 	icon: <Component />,
+						// },
 					].map((feature) => (
 						<div key={feature.title} className="grid gap-4">
 							<div className="flex items-start gap-4">
