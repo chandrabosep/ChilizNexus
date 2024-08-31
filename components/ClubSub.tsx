@@ -5,7 +5,8 @@ import { Button } from "./ui/button";
 import { BellIcon } from "lucide-react";
 
 export default function ClubSub({ data }: any) {
-	const showNotification = true;
+	const isSubscribed = localStorage.getItem("isSubscribed");
+	const showNotification = isSubscribed ? JSON.parse(isSubscribed) : false;
 
 	return (
 		<div>
@@ -17,8 +18,9 @@ export default function ClubSub({ data }: any) {
 								<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
 									Official updates
 								</h2>
-								{data?.notifications?.map(
-									(notification: any) => (
+								{[...data?.notifications]
+									.reverse()
+									?.map((notification: any) => (
 										<Alert
 											key={notification.id}
 											className="mt-6"
@@ -33,17 +35,24 @@ export default function ClubSub({ data }: any) {
 												</AlertDescription>
 											</div>
 										</Alert>
-									)
-								)}
+									))}
 							</>
 						) : (
 							<div className="mt-6 flex flex-col gap-y-4">
 								<h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
 									Subscribe to get official updates
 								</h2>
-								<form className="flex items-center justify-center gap-2 ">
-									<Button type="submit">Subscribe</Button>
-								</form>
+								<Button
+									type="submit"
+									onClick={() => {
+										localStorage.setItem(
+											"isSubscribed",
+											JSON.stringify(true)
+										);
+									}}
+								>
+									Subscribe
+								</Button>
 								<p className="mt-2 text-sm text-muted-foreground">
 									{`We'll never share your email. Read our`}
 									<Link
