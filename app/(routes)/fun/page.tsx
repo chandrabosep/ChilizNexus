@@ -27,7 +27,7 @@ export default function page() {
 								>
 									Sport
 								</Label>
-								<Select id="sport" className="w-full">
+								<Select >
 									<option value="">All Sports</option>
 									<option value="football">Football</option>
 									<option value="basketball">
@@ -44,7 +44,7 @@ export default function page() {
 								>
 									League
 								</Label>
-								<Select id="league" className="w-full">
+								<Select>
 									<option value="">All Leagues</option>
 									<option value="premier-league">
 										Premier League
