@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 export default function EventCard({ data }: any) {
 	return (
 		<>
-			<Card className="flex rounded-lg overflow-hidden shadow-lg h-[20rem] w-1/2">
+			<Card className="flex rounded-lg overflow-hidden shadow-lg h-[20rem] w-[45rem]">
 				<div className="relative h-full w-1/2">
 					<Image
 						src="/eve.jpg"
