@@ -8,10 +8,6 @@ const links = ["clubs", "events", "bridge", "fun"];
 
 export default function Navbar() {
 	const { address, isConnected } = useAccount();
-	const adminAddresses = [
-		"0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701",
-		"0x709d29dc073F42feF70B6aa751A8D186425b2750",
-	];
 
 	return (
 		<div className="flex items-center justify-between py-4 border-2 border-primaryColor rounded-full px-6 mt-4">

@@ -79,7 +79,6 @@ export default function CreateCommEvent({ data }: any) {
 			} else {
 				console.error("Failed to create the community event.");
 			}
-			console.log(res);
 		} catch (e) {
 			console.log(e);
 		}
@@ -185,6 +184,11 @@ export default function CreateCommEvent({ data }: any) {
 										type="number"
 										placeholder="Price"
 										{...field}
+										onChange={(e) =>
+											field.onChange(
+												Number(e.target.value)
+											)
+										}
 									/>
 								</FormControl>
 								<FormMessage />

@@ -14,8 +14,16 @@ import ClubEvents from "@/components/ClubEvents";
 import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity";
 import { useParams } from "next/navigation";
+import Admin from "@/components/Admin";
+import { useAccount } from "wagmi";
 
 export default function ClubInfo() {
+	const { address } = useAccount();
+	const adminAddresses = [
+		"0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701",
+		"0x709d29dc073F42feF70B6aa751A8D186425b2750",
+	];
+
 	const slug = useParams();
 	const [data, setData] = useState<any>([]);
 
@@ -31,7 +39,7 @@ export default function ClubInfo() {
 			setData(data);
 		}
 		getProjects();
-	}, [slug]);
+	}, [slug,address]);
 	return (
 		<div>
 			<div className="flex flex-col justify-center gap-10 w-full py-12 md:py-16 lg:py-20">
@@ -116,6 +124,15 @@ export default function ClubInfo() {
 							>
 								Chat
 							</TabsTrigger>
+							{/* @ts-ignore */}
+							{adminAddresses.includes(address) && (
+								<TabsTrigger
+									value="admin"
+									className="data-[state=active]:bg-primaryColor data-[state=active]:text-white"
+								>
+									Admin
+								</TabsTrigger>
+							)}
 						</TabsList>
 						<TabsContent
 							value="overview"
@@ -142,6 +159,12 @@ export default function ClubInfo() {
 							className="border rounded-xl p-4 px-5 mt-5"
 						>
 							<ClubEvents data={data} />
+						</TabsContent>
+						<TabsContent
+							value="admin"
+							className="border rounded-xl p-4 px-5 mt-5"
+						>
+							<Admin data={data} />
 						</TabsContent>
 					</Tabs>
 				</div>
