@@ -17,6 +17,7 @@ import { useParams } from "next/navigation";
 import Admin from "@/components/Admin";
 import { useAccount } from "wagmi";
 import Proposals from "@/components/Proposals";
+import Chat from "@/components/Chat";
 
 export default function ClubInfo() {
 	const { address } = useAccount();
@@ -41,7 +42,7 @@ export default function ClubInfo() {
 			setData(data);
 		}
 		getProjects();
-	}, [slug,address]);
+	}, [slug, address]);
 	return (
 		<div>
 			<div className="flex flex-col justify-center gap-10 w-full py-12 md:py-16 lg:py-20">
@@ -158,9 +159,10 @@ export default function ClubInfo() {
 							value="chat"
 							className="border rounded-xl p-4 px-5 mt-5"
 						>
-							<div className="flex items-center justify-center  min-h-[300px] w-full text-3xl font-medium">
+							{/* <div className="flex items-center justify-center  min-h-[300px] w-full text-3xl font-medium">
 								Coming Soon
-							</div>
+							</div> */}
+							<Chat />
 						</TabsContent>
 						<TabsContent
 							value="events"
