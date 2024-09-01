@@ -5,7 +5,7 @@ import Web3ModalProvider from "@/context";
 import { cookieToInitialState } from "wagmi";
 import { config } from "@/config";
 import { headers } from "next/headers";
-import Navbar from "@/components/Navbar";
+import Header from "@/components/Header";
 
 const ppmori = localfont({
 	src: [
@@ -33,8 +33,8 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={ppmori.className}>
 				<Web3ModalProvider initialState={initialState}>
-					<Navbar />
-					{children}
+					<Header />
+					<div>{children}</div>
 				</Web3ModalProvider>
 			</body>
 		</html>

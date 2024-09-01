@@ -5,7 +5,7 @@ import Image from "next/image";
 
 const links = ["clubs", "events", "bridge", "fun"];
 
-export default function Navbar() {
+export default function Header() {
 	const { isConnected } = useAccount();
 
 	return (
