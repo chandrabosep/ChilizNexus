@@ -6,7 +6,8 @@ import CommunityCard from "./CommunityCard";
 
 export default function Events() {
 	const [events, setEvents] = useState([]);
-	const [commEvents, setCommEvents] = useState([]);
+	const [commEventsOffline, setCommEventsOffline] = useState([]);
+	const [commEventsVirtual, setCommEventsVirtual] = useState([]);
 
 	useEffect(() => {
 		async function getEvents() {
@@ -24,12 +25,20 @@ export default function Events() {
 				.flat()
 				.filter(Boolean);
 
+			const offlineCommEvents = allCommEvents.filter(
+				(event: any) => event.type === "offline"
+			);
+			const virtualCommEvents = allCommEvents.filter(
+				(event: any) => event.type === "virtual"
+			);
+
 			setEvents(allEvents);
-			setCommEvents(allCommEvents);
+			setCommEventsOffline(offlineCommEvents);
+			setCommEventsVirtual(virtualCommEvents);
 		}
 		getEvents();
 	}, []);
-	console.log(commEvents, events);
+	console.log(events, commEventsOffline, commEventsVirtual);
 	return (
 		<>
 			<div className="flex flex-col w-full gap-6">
@@ -50,9 +59,21 @@ export default function Events() {
 						{`Community Events (local)`}
 					</h6>
 					<div className="flex flex-wrap gap-6">
-					{commEvents.map((event, index) => (
+						{commEventsOffline.map((event, index) => (
 							<div key={index}>
-								<CommunityCard data={event} />
+								<CommunityCard data={event} type="offline" />
+							</div>
+						))}
+					</div>
+				</div>
+				<div className="flex flex-col gap-y-8 py-4">
+					<h6 className="text-xl text-primaryColor underline decoration-secondaryColor decoration-wavy underline-offset-4 w-fit font-semibold">
+						{`Virtual Events`}
+					</h6>
+					<div className="flex flex-wrap gap-6">
+						{commEventsVirtual.map((event, index) => (
+							<div key={index}>
+								<CommunityCard data={event} type="virtual" />
 							</div>
 						))}
 					</div>

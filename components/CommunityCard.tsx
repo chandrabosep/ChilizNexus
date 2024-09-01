@@ -4,13 +4,13 @@ import { CalendarIcon, ClockIcon, MapPinIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "./ui/button";
 
-export default function CommunityCard({ data }: any) {
+export default function CommunityCard({ data,type }: any) {
 	return (
 		<>
-			<Card className="flex rounded-lg overflow-hidden shadow-lg h-[20rem] w-1/2 min-w-[40rem]">
+			<Card className="flex rounded-lg overflow-hidden shadow-lg h-[20rem] w-[43rem]">
 				<div className="relative h-full w-1/2">
 					<Image
-						src="/comm.jpg"
+						src={ type === "virtual" ? "/vir.jpg" : "/comm.jpg"}
 						alt="Event Image"
 						layout="fill"
 						objectFit="cover"

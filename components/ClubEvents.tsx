@@ -53,13 +53,27 @@ export default function ClubEvents({ data }: any) {
 						</Dialog>
 					</div>
 					<div className="flex flex-wrap gap-6 w-full">
-						{data.communityEvents?.map(
-							(event: any, index: number) => (
+						{data.communityEvents
+							?.filter((event: any) => event.type === "offline")
+							.map((event: any, index: number) => (
 								<div key={index} className="w-1/2 max-w-fit">
-									<CommunityCard key={index} data={event} />
+									<CommunityCard key={index} data={event} type="offline" />
 								</div>
-							)
-						)}
+							))}
+					</div>
+				</div>
+				<div className="flex flex-col gap-y-8 py-4 w-full">
+					<h6 className="text-xl text-primaryColor underline decoration-secondaryColor decoration-wavy underline-offset-4 w-fit font-semibold">
+						Virtual Events
+					</h6>
+					<div className="flex flex-wrap gap-6">
+						{data.communityEvents
+							?.filter((event: any) => event.type === "virtual")
+							.map((event: any, index: number) => (
+								<div key={index} className="w-1/2 max-w-fit">
+									<CommunityCard key={index} data={event} type="virtual" />
+								</div>
+							))}
 					</div>
 				</div>
 			</div>

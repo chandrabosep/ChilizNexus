@@ -5,7 +5,7 @@ import Web3ModalProvider from "@/context";
 import { cookieToInitialState } from "wagmi";
 import { config } from "@/config";
 import { headers } from "next/headers";
-import Navbar from "../components/Navbar";
+import Navbar from "@/components/Navbar";
 
 const ppmori = localfont({
 	src: [

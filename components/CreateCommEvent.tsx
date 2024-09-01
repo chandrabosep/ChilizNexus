@@ -16,6 +16,13 @@ import { Input } from "./ui/input";
 import { client } from "@/lib/sanity";
 import { Textarea } from "./ui/textarea";
 import { v4 as uuidv4 } from "uuid";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "./ui/select";
 
 const formSchema = z.object({
 	name: z.string().min(1, { message: "Name is required" }),
@@ -28,6 +35,7 @@ const formSchema = z.object({
 	address: z.string().min(1, { message: "Address is required" }),
 	price: z.number(),
 	wallet: z.string().min(1, { message: "Wallet is required" }),
+	type: z.string().min(1, { message: "Type is required" }),
 });
 export default function CreateCommEvent({ data }: any) {
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -41,6 +49,7 @@ export default function CreateCommEvent({ data }: any) {
 			address: "",
 			price: 0,
 			wallet: "",
+			type: "",
 		},
 	});
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -55,6 +64,7 @@ export default function CreateCommEvent({ data }: any) {
 				address: values.address,
 				price: Number(values.price),
 				wallet: values.wallet,
+				type: values.type,
 			};
 			const createdEvent = await client.create(eventDoc, {
 				headers: {
@@ -126,47 +136,82 @@ export default function CreateCommEvent({ data }: any) {
 							</FormItem>
 						)}
 					/>
-					<FormField
-						control={form.control}
-						name="date"
-						render={({ field }) => (
-							<FormItem>
-								<FormControl>
-									<Input
-										type="date"
-										placeholder="Date of event"
-										{...field}
-										className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="from"
-						render={({ field }) => (
-							<FormItem>
-								<FormControl>
-									<Input placeholder="From" {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="to"
-						render={({ field }) => (
-							<FormItem>
-								<FormControl>
-									<Input placeholder="To" {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
+					<div className="flex items-center w-full gap-x-6">
+						<FormField
+							control={form.control}
+							name="date"
+							render={({ field }) => (
+								<FormItem>
+									<FormControl>
+										<Input
+											type="date"
+											placeholder="Date of event"
+											{...field}
+											className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="type"
+							render={({ field }) => (
+								<FormItem>
+									<FormControl>
+										<Select
+											onValueChange={(value) =>
+												field.onChange(value)
+											}
+											value={field.value}
+										>
+											<SelectTrigger className="min-w-[18rem]">
+												<SelectValue placeholder="Event Type" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="offline">
+													Offline
+												</SelectItem>
+												<SelectItem value="virtual">
+													Virtual
+												</SelectItem>
+											</SelectContent>
+										</Select>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</div>
+
+					<div className="flex items-center justify-between">
+						<FormField
+							control={form.control}
+							name="from"
+							render={({ field }) => (
+								<FormItem>
+									<FormControl>
+										<Input placeholder="From" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="to"
+							render={({ field }) => (
+								<FormItem>
+									<FormControl>
+										<Input placeholder="To" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</div>
+
 					<FormField
 						control={form.control}
 						name="address"
