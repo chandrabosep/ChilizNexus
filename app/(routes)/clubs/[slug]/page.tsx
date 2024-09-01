@@ -16,6 +16,7 @@ import { client } from "@/lib/sanity";
 import { useParams } from "next/navigation";
 import Admin from "@/components/Admin";
 import { useAccount } from "wagmi";
+import Proposals from "@/components/Proposals";
 
 export default function ClubInfo() {
 	const { address } = useAccount();
@@ -33,7 +34,8 @@ export default function ClubInfo() {
 							...,
 							events[]->,
 							communityEvents[]->,
-							notifications[]->
+							notifications[]->,
+							proposals[]->
 							}[0]`;
 			const data = await client.fetch(query);
 			setData(data);
@@ -119,6 +121,12 @@ export default function ClubInfo() {
 								Subscription
 							</TabsTrigger>
 							<TabsTrigger
+								value="proposals"
+								className="data-[state=active]:bg-primaryColor data-[state=active]:text-white"
+							>
+								Proposals
+							</TabsTrigger>
+							<TabsTrigger
 								value="chat"
 								className="data-[state=active]:bg-primaryColor data-[state=active]:text-white"
 							>
@@ -165,6 +173,12 @@ export default function ClubInfo() {
 							className="border rounded-xl p-4 px-5 mt-5"
 						>
 							<Admin data={data} />
+						</TabsContent>
+						<TabsContent
+							value="proposals"
+							className="border rounded-xl p-4 px-5 mt-5"
+						>
+							<Proposals data={data} />
 						</TabsContent>
 					</Tabs>
 				</div>

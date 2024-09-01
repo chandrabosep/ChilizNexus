@@ -5,7 +5,7 @@ import React from "react";
 export default function Overview({ data }: any) {
 	return (
 		<>
-			<div className="flex flex-col gap-y-8">
+			<div className="flex flex-col gap-y-8 py-4">
 				<div className="">
 					<h2 className="text-2xl font-bold mb-4">
 						About {data.name}
