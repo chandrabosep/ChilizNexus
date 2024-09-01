@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import Image from "next/image";
@@ -7,7 +6,7 @@ import Image from "next/image";
 const links = ["clubs", "events", "bridge", "fun"];
 
 export default function Navbar() {
-	const { address, isConnected } = useAccount();
+	const { isConnected } = useAccount();
 
 	return (
 		<div className="flex items-center justify-between py-4 border-2 border-primaryColor rounded-full px-6 mt-4">
