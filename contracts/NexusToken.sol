@@ -43,10 +43,10 @@ contract NexusToken is CAP223 {
     /// @notice Constructor to initialize the contract with supported fan tokens
     constructor() CAP223("ChilizNexusToken", "CNT", 0) {
         // Initialize the supported tokens mapping with predefined fan tokens
-        // s_supportedFanTokens[0x63667746A7A005E45B1fffb13a78d0331065Ff7f] = true; // testBAR
-        // s_supportedFanTokens[0xa4bf4104ec0109591077Ee5F4a2bFD13dEE1Bdf8] = true; // testPSG
-        // s_supportedFanTokens[0x1ED7858225dF2a3365d07dD7C08d165D6A399bE6] = true; // testJUV
-    }
+       s_supportedFanTokens[0xE2E39B1A5eFe07743F9E0E8408F1B7aAB6B7f832] = true; // testBAR
+        s_supportedFanTokens[0xA4e42B23B86DF349c91a5F87701C4c575b58DBD5] = true; // testJUV
+        s_supportedFanTokens[0x5E36A22751f56aECE9A970beac728De684E7Bd1E] = true; // testPSG
+       }
 
     /// @notice Function to mint NexusToken tokens by depositing supported fan tokens
     /// @param fanTokenAddress The address of the supported fan token
