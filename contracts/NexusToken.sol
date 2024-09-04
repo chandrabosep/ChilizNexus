@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {CAP223, ICAP223} from "./CAP223.sol";
+import {CAP223, ICAP223} from "./CAP223/CAP223.sol";
 
 /// NexusToken Contract
 /// @dev A contract creates interoperable for platform tokens using fan tokens, including minting and redeeming operations.
