@@ -4,7 +4,7 @@ async function main() {
   console.log("Deploying CNFCBarcelona Contract...");
 
   const CNBarContract = await cnBarContract.deploy({
-    gasLimit: 5000000, // Adjust the gas limit to a more reasonable value
+    gasLimit: 5000000,
   });
 
   await CNBarContract.waitForDeployment();
@@ -19,7 +19,7 @@ async function main() {
   console.log("Deploying CNParisSaintGermai Contract...");
 
   const CNPsgContract = await cnPsgContract.deploy({
-    gasLimit: 5000000, // Adjust the gas limit to a more reasonable value
+    gasLimit: 5000000,
   });
 
   await CNPsgContract.waitForDeployment();
@@ -32,7 +32,7 @@ async function main() {
   console.log("Deploying CNJuventus Contract...");
 
   const CNJuvContract = await cnJuvContract.deploy({
-    gasLimit: 5000000, // Adjust the gas limit to a more reasonable value
+    gasLimit: 5000000,
   });
 
   await CNJuvContract.waitForDeployment();
