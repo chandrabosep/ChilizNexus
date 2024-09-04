@@ -1,10 +1,10 @@
 async function main() {
-  // BAR Contract
+  // BAR Contract Deployment
   const cnBarContract = await hre.ethers.getContractFactory("CNFCBarcelona");
-  console.log("Deploying NexusToken Contract...");
+  console.log("Deploying CNFCBarcelona Contract...");
 
   const CNBarContract = await cnBarContract.deploy({
-    gasLimit: 30000000000,
+    gasLimit: 5000000, // Adjust the gas limit to a more reasonable value
   });
 
   await CNBarContract.waitForDeployment();
@@ -12,14 +12,14 @@ async function main() {
   console.log("CNFCBarcelona Contract Address:", cnBarAddress);
   console.log("----------------------------------------------------------");
 
-  // PSG Contract
+  // PSG Contract Deployment
   const cnPsgContract = await hre.ethers.getContractFactory(
     "CNParisSaintGermai"
   );
   console.log("Deploying CNParisSaintGermai Contract...");
 
   const CNPsgContract = await cnPsgContract.deploy({
-    gasLimit: 30000000000,
+    gasLimit: 5000000, // Adjust the gas limit to a more reasonable value
   });
 
   await CNPsgContract.waitForDeployment();
@@ -27,12 +27,12 @@ async function main() {
   console.log("CNParisSaintGermai Contract Address:", cnPsgAddress);
   console.log("----------------------------------------------------------");
 
-  // JUV Contract
+  // JUV Contract Deployment
   const cnJuvContract = await hre.ethers.getContractFactory("CNJuventus");
-  console.log("Deploying NexusToken Contract...");
+  console.log("Deploying CNJuventus Contract...");
 
   const CNJuvContract = await cnJuvContract.deploy({
-    gasLimit: 30000000000,
+    gasLimit: 5000000, // Adjust the gas limit to a more reasonable value
   });
 
   await CNJuvContract.waitForDeployment();
@@ -40,34 +40,37 @@ async function main() {
   console.log("CNJuventus Contract Address:", cnJuvAddress);
   console.log("----------------------------------------------------------");
 
-  // Verify CNJuventus Contract
-  console.log("Verifying CNJuventus...");
+  // Verify CNFCBarcelona Contract
+  console.log("Verifying CNFCBarcelona...");
   await run("verify:verify", {
     address: cnBarAddress,
     constructorArguments: [],
   });
   console.log("----------------------------------------------------------");
-}
-// Verify CNParisSaintGermai Contract
-console.log("Verifying CNParisSaintGermai...");
-await run("verify:verify", {
-  address: cnPsgAddress,
-  constructorArguments: [],
-});
-console.log("----------------------------------------------------------");
 
-// Verify CNFCBarcelona Contract
-console.log("Verifying CNFCBarcelona...");
-await run("verify:verify", {
-  address: cnJuvAddress,
-  constructorArguments: [],
-});
-console.log("----------------------------------------------------------");
+  // Verify CNParisSaintGermai Contract
+  console.log("Verifying CNParisSaintGermai...");
+  await run("verify:verify", {
+    address: cnPsgAddress,
+    constructorArguments: [],
+  });
+  console.log("----------------------------------------------------------");
+
+  // Verify CNJuventus Contract
+  console.log("Verifying CNJuventus...");
+  await run("verify:verify", {
+    address: cnJuvAddress,
+    constructorArguments: [],
+  });
+  console.log("----------------------------------------------------------");
+}
 
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
 
-// yarn hardaht run scripts/deploy.js --network chilizSpicy
+// To run this script:
+// yarn hardhat run scripts/deployFanTokens.js --network chilizSpicy
+// To verify contracts:
 // yarn hardhat verify --network chilizSpicy DEPLOYED_CONTRACT_ADDRESS
