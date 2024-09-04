@@ -3,7 +3,7 @@ async function main() {
   console.log("Deploying NexusToken Contract...");
 
   const NexusTokenContract = await nexusTokenContract.deploy({
-    gasLimit: 30000000000,
+    gasLimit: 5000000,
   });
 
   await NexusTokenContract.waitForDeployment();
@@ -25,5 +25,5 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-// yarn hardaht run scripts/deploy.js --network chilizSpicy
+// yarn hardhat run scripts/deployNexusToken.js --network chilizSpicy
 // yarn hardhat verify --network chilizSpicy DEPLOYED_CONTRACT_ADDRESS
