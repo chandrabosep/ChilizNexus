@@ -1,7 +1,7 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
 
 import { cookieStorage, createStorage } from "wagmi";
-import { chiliz } from "wagmi/chains";
+import { baseSepolia, chiliz, spicy } from "wagmi/chains";
 
 // Get projectId from https://cloud.walletconnect.com
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
@@ -16,7 +16,7 @@ export const metadata = {
 };
 
 // Create wagmiConfig
-const chains = [chiliz] as const;
+const chains = [chiliz, spicy, baseSepolia] as const;
 export const config = defaultWagmiConfig({
 	chains,
 	projectId,
