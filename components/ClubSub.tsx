@@ -70,14 +70,7 @@ export default function ClubSub({ data }: any) {
 								</Button>
 								<p className="mt-2 text-sm text-secondaryColor/60">
 									{`We'll never share your email. Read our `}
-									<Link
-										href="#"
-										className="underline"
-										prefetch={false}
-									>
-										privacy policy
-									</Link>
-									.
+									Fully onchain subscription by XMTP
 								</p>
 							</div>
 						)}

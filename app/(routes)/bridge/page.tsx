@@ -95,10 +95,10 @@ export default function Bridge() {
 			</div>
 			<Balance />
 			<div className="max-w-screen-md mx-auto flex flex-col gap-y-16">
-				<div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+				<div className="flex items-center gap-8 mx-auto">
 					<div className="flex items-center mt-auto gap-x-2">
 						<div className="flex flex-col gap-y-2">
-							<Label htmlFor="from">FAN TOKEN</Label>
+							<Label htmlFor="from" className="font-medium">FAN TOKEN</Label>
 							<Input
 								id="from"
 								placeholder="0.0"
@@ -113,7 +113,7 @@ export default function Bridge() {
 							<SelectTrigger className="w-fit mt-6">
 								<SelectValue />
 							</SelectTrigger>
-							<SelectContent>
+							<SelectContent className="w-fit">
 								<SelectItem value={BAR}>BAR</SelectItem>
 								<SelectItem value={JUV}>JUV</SelectItem>
 								<SelectItem value={PSG}>PSG</SelectItem>
@@ -124,7 +124,7 @@ export default function Bridge() {
 						<ArrowLeftRightIcon className="h-6 w-6 text-muted-foreground" />
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="to">NEXUS TOKEN</Label>
+						<Label htmlFor="to" className="font-medium">NEXUS TOKEN</Label>
 						<Input
 							id="to"
 							value={`${fromAmount} NEXUS TOKEN`}
@@ -184,7 +184,7 @@ export default function Bridge() {
 					<h3 className="text-lg font-medium">
 						Supported fan Tokens
 					</h3>
-					<p className="text-muted-foreground">BAR, PSG, JUV</p>
+					<p className="text-muted-foreground font-medium">BAR, PSG, JUV</p>
 				</div>
 			</div>
 

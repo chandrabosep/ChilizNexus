@@ -131,7 +131,7 @@ export default function ClubInfo() {
 								value="chat"
 								className="data-[state=active]:bg-primaryColor data-[state=active]:text-white"
 							>
-								Chat
+								Group Chat
 							</TabsTrigger>
 							{/* @ts-ignore */}
 							{adminAddresses.includes(address) && (

@@ -171,7 +171,7 @@ export default function CreateCommEvent({ data }: any) {
 											</SelectTrigger>
 											<SelectContent>
 												<SelectItem value="offline">
-													Offline
+													Community
 												</SelectItem>
 												<SelectItem value="virtual">
 													Virtual

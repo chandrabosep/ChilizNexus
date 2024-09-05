@@ -56,7 +56,7 @@ export default function Events() {
 				</div>
 				<div className="flex flex-col gap-y-8 py-4">
 					<h6 className="text-xl text-primaryColor underline decoration-secondaryColor decoration-wavy underline-offset-4 w-fit font-semibold">
-						{`Community Events (local)`}
+						{`Community Events`}
 					</h6>
 					<div className="flex flex-wrap gap-6">
 						{commEventsOffline.map((event, index) => (

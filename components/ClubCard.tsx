@@ -14,6 +14,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import urlBuilder from "@sanity/image-url";
 import { urlFor } from "@/lib/sanity";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 export default function ClubCard({ data }: any) {
 	const router = useRouter();
@@ -67,7 +69,7 @@ export default function ClubCard({ data }: any) {
 						</p>
 					</>
 				) : (
-					<div className="flex flex-col justify-between h-full">
+					<div className="flex flex-col gap-y-4 justify-between h-full">
 						<div className="flex flex-col gap-y-2 h-fit">
 							<p className="font-semibold pt-1 px-2 bg-primaryColor text-white w-fit rounded">
 								ERC20
@@ -76,7 +78,7 @@ export default function ClubCard({ data }: any) {
 								{data.name}
 							</h3>
 
-							<div className="grid grid-cols-2 items-center justify-between py-10">
+							<div className="grid grid-cols-2 items-center justify-between py-8">
 								<div className="mx-auto text-center">
 									<h6 className="text-xl font-bold">Fans</h6>
 									<p className="text-muted-foreground text-3xl">
@@ -113,6 +115,13 @@ export default function ClubCard({ data }: any) {
 									)
 								)}
 							</div>
+						</	div>
+						<div className="flex items-center gap-x-2 pt-5">
+							<Input
+								placeholder="Fund"
+								onClick={handleFundClick}
+							/>
+							<Button onClick={handleFundClick} className="">Fund</Button>
 						</div>
 					</div>
 				)}

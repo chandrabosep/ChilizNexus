@@ -100,7 +100,7 @@ export default function Admin({ data }: any) {
 		<div className="flex flex-col gap-y-6 py-4">
 			<div className="grid md:grid-cols-2 gap-x-10">
 				<div className="border-r-4 border-x-gray-200 pr-8">
-					<h1 className="text-2xl font-bold mb-4">Add New Entry</h1>
+					<h1 className="text-2xl font-bold mb-4">Create Live Event</h1>
 					<Form {...form}>
 						<form
 							onSubmit={form.handleSubmit(onSubmit)}
@@ -258,7 +258,7 @@ export default function Admin({ data }: any) {
 				</div>
 			</div>
 			<div className="mt-8">
-				<h2 className="text-xl font-bold mb-4">Entries</h2>
+				<h2 className="text-xl font-bold mb-4">Events</h2>
 				<div className="w-full bg-card rounded-lg shadow-sm mb-4">
 					<Table>
 						<TableHeader>

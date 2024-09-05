@@ -31,7 +31,7 @@ export default function ClubEvents({ data }: any) {
 				<div className="flex flex-col gap-y-8 py-4 w-full">
 					<div className="flex justify-between items-center">
 						<h6 className="text-xl text-primaryColor underline decoration-secondaryColor decoration-wavy underline-offset-4 w-fit font-semibold">
-							{`Community Events (local)`}
+							{`Community Events`}
 						</h6>
 
 						<Dialog>

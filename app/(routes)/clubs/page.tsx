@@ -8,7 +8,7 @@ const Clubs = () => {
 
 	useEffect(() => {
 		async function getProjects() {
-			const query = `*[_type == "club" && allow == true]`;
+			const query = `*[_type == "club" && allow == true] | order(_createdAt asc)`;
 			const data = await client.fetch(query);
 			setClubs(data);
 		}

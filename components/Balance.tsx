@@ -54,25 +54,25 @@ export default function Balance() {
 		<>
 			<div className="grid grid-cols-4 gap-2 w-full max-w-3xl mx-auto">
 				<div className="p-4 flex flex-col items-center gap-x-2">
-					<h3 className="text-xl font-bold mb-2">Nexus Token</h3>
+					<h3 className="text-xl mb-2">Nexus Token</h3>
 					<p className="text-2xl font-semibold text-gray-700">
 						{balance || 0}
 					</p>
 				</div>
 				<div className="p-4 flex flex-col items-center gap-x-2">
-					<h3 className="text-xl font-bold mb-2">BAR Token</h3>
+					<h3 className="text-xl mb-2">BAR Token</h3>
 					<p className="text-2xl font-semibold text-gray-700">
 						{BARbalance || 0}
 					</p>
 				</div>
 				<div className="p-4 flex flex-col items-center gap-x-2">
-					<h3 className="text-xl font-bold mb-2">JUV Token</h3>
+					<h3 className="text-xl mb-2">JUV Token</h3>
 					<p className="text-2xl font-semibold text-gray-700">
 						{JUVbalance || 0}
 					</p>
 				</div>
 				<div className="p-4 flex flex-col items-center gap-x-2">
-					<h3 className="text-xl font-bold mb-2">PSG Token</h3>
+					<h3 className="text-xl mb-2">PSG Token</h3>
 					<p className="text-2xl font-semibold text-gray-700">
 						{PSGbalance || 0}
 					</p>
