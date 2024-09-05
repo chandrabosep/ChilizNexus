@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import {ERC1155Supply} from "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 // Custom Errors
@@ -25,7 +26,7 @@ error NexusEventGate__IncorrectTicketPrice();
 error NexusEventGate__ZeroAmountForTokenDrop();
 error NexusEventGate__InsufficientBalanceForTokenDrop();
 
-contract NexusEventGate is ERC1155, Ownable, ERC1155Supply {
+contract NexusEventGate is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     /// @notice Name of the contract
     string public _name;
 
@@ -91,7 +92,7 @@ contract NexusEventGate is ERC1155, Ownable, ERC1155Supply {
 
     /// @notice Function to add native tokens to the Nexus drop for a specific event
     /// @param eventId The ID of the event
-    function nexusDrop(uint64 eventId) public payable {
+    function nexusDrop(uint64 eventId) public payable nonReentrant {
         s_eventIdToNexusDrop[eventId] += msg.value;
     }
 
@@ -166,9 +167,8 @@ contract NexusEventGate is ERC1155, Ownable, ERC1155Supply {
             revert NexusEventGate__InvalidFanTokenAddress();
 
         // Check if the event ID already exists
-        if (getTokenIdsFromEventId(eventId).length > 0) {
+        if (getTokenIdsFromEventId(eventId).length > 0)
             revert NexusEventGate__EventIdAlreadyExists();
-        }
         uint256 len = accessLevels.length;
 
         // Check if the lengths of the accessLevels, ticketPrices, and ticketLimits arrays match
@@ -199,8 +199,8 @@ contract NexusEventGate is ERC1155, Ownable, ERC1155Supply {
             s_tokenIdToTicketPrice[tokenId] = ticketPrices[i];
             s_tokenIdToTicketLimit[tokenId] = ticketLimits[i];
         }
-        s_eventIdToEndTimestamp[eventId] = uint64(block.timestamp + 1 weeks);
-        // s_eventIdToEndTimestamp[eventId] = endTimestamp;
+        // s_eventIdToEndTimestamp[eventId] = uint64(block.timestamp + 1 weeks);
+        s_eventIdToEndTimestamp[eventId] = endTimestamp;
 
         uint256 eventManagerTokenId = getTokenIdOfAnEventManager(eventId);
         _mint(userAddress, eventManagerTokenId, 1, "");
@@ -227,12 +227,8 @@ contract NexusEventGate is ERC1155, Ownable, ERC1155Supply {
             revert NexusEventGate__InvalidFanTokenAddress();
 
         // Check if the event ID already exists
-        if (
-            getTokenIdsFromEventId(eventId).length > 0 ||
-            getAccessLevelsFromEventId(eventId).length > 0
-        ) {
+        if (getTokenIdsFromEventId(eventId).length > 0)
             revert NexusEventGate__EventIdAlreadyExists();
-        }
 
         // Check if the user owns fan tokens
         if (!checkUserOwnFanTokens(fanTokenAddress, userAddress))
@@ -245,12 +241,46 @@ contract NexusEventGate is ERC1155, Ownable, ERC1155Supply {
         );
 
         s_eventIdToTokenIds[eventId].push(tokenId);
-        s_eventIdToEndTimestamp[eventId] = uint64(block.timestamp + 1 weeks);
-        // s_eventIdToEndTimestamp[eventId] = endTimestamp;
+        // s_eventIdToEndTimestamp[eventId] = uint64(block.timestamp + 1 weeks);
+        s_eventIdToEndTimestamp[eventId] = endTimestamp;
         s_tokenIdToTicketLimit[tokenId] = ticketLimit;
         _mint(userAddress, tokenId, 1, "");
 
         emit EventRegistered(eventId, userAddress, endTimestamp);
+    }
+
+    /// @notice Function to mint a live event ticket for a specific token ID
+    /// @param userAddress The address of the user to mint the ticket for
+    /// @param tokenId The ID of the token (ticket) to be minted
+    function mintLiveTicket(address userAddress, uint256 tokenId)
+        public
+        payable
+        nonReentrant
+    {
+        if (userAddress == address(0))
+            revert NexusEventGate__InvalidInputAddress();
+
+        uint256 ticketPrice = getTicketPriceFromTokenId(tokenId);
+        if (ticketPrice == 0 || ticketPrice != msg.value)
+            revert NexusEventGate__IncorrectTicketPrice();
+
+        _mint(userAddress, tokenId, 1, "");
+    }
+
+    /// @notice Function to mint a community event ticket for a specific token ID
+    /// @param userAddress The address of the user to mint the ticket for
+    /// @param tokenId The ID of the token (ticket) to be minted
+    function mintCommunityTicket(address userAddress, uint256 tokenId)
+        public
+        payable
+    {
+        if (userAddress == address(0))
+            revert NexusEventGate__InvalidInputAddress();
+
+        uint256 ticketPrice = getTicketPriceFromTokenId(tokenId);
+        if (ticketPrice != 0) revert NexusEventGate__IncorrectTicketPrice();
+
+        _mint(userAddress, tokenId, 1, "");
     }
 
     /// @notice Function to withdraw the collected amount for an event ID by the event manager
