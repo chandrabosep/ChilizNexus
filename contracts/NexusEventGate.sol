@@ -4,7 +4,6 @@ pragma solidity ^0.8.20;
 import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import {ERC1155Supply} from "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 // Custom Errors
@@ -26,12 +25,12 @@ error NexusEventGate__IncorrectTicketPrice();
 error NexusEventGate__ZeroAmountForTokenDrop();
 error NexusEventGate__InsufficientBalanceForTokenDrop();
 
-contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
+contract NexusEventGate is ERC1155, Ownable, ERC1155Supply {
     /// @notice Name of the contract
-    string private _name;
+    string public _name;
 
     /// @notice Symbol of the contract
-    string private _symbol;
+    string public _symbol;
 
     /// @notice Address of the Nexus Token Contract
     address private s_nexusTokenContract;
@@ -62,10 +61,6 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     /// @param amount Amount of native tokens sent
     event TransferAttempt(address indexed recipient, uint256 indexed amount);
 
-    /// @notice Event emitted when the base URI is updated
-    /// @param newURI The new URI that has been set
-    event BaseURIUpdated(string newURI);
-
     /// @notice Event emitted when a live event is registered
     /// @param eventId The ID of the registered live event
     /// @param manager The address of the event manager
@@ -92,7 +87,6 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     /// @dev Only callable by the contract owner
     function setBaseURI(string memory newuri) public onlyOwner {
         _setURI(newuri);
-        emit BaseURIUpdated(newuri);
     }
 
     /// @notice Function to add native tokens to the Nexus drop for a specific event
@@ -108,7 +102,6 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     function distributeDrop(uint64 eventId, address[] calldata userAddresses)
         public
         onlyOwner
-        nonReentrant
     {
         uint256 collectedAmount = s_eventIdToNexusDrop[eventId];
         if (collectedAmount == 0)
@@ -124,7 +117,6 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
         uint256 amountPerUser = (collectedAmount) / len;
         if (amountPerUser == 0)
             revert NexusEventGate__InsufficientBalanceForTokenDrop();
-        
 
         // Update state first to prevent reentrancy
         s_eventIdToNexusDrop[eventId] = 0;
@@ -174,10 +166,7 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
             revert NexusEventGate__InvalidFanTokenAddress();
 
         // Check if the event ID already exists
-        if (
-            getTokenIdsFromEventId(eventId).length > 0 ||
-            getAccessLevelsFromEventId(eventId).length > 0
-        ) {
+        if (getTokenIdsFromEventId(eventId).length > 0) {
             revert NexusEventGate__EventIdAlreadyExists();
         }
         uint256 len = accessLevels.length;
@@ -196,7 +185,7 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
         for (uint256 i = 0; i < len; ++i) {
             uint256 tokenId = generateTokenId(
                 eventId,
-                userAddress,
+                // userAddress,
                 accessLevels[i]
             );
 
@@ -249,7 +238,11 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
         if (!checkUserOwnFanTokens(fanTokenAddress, userAddress))
             revert NexusEventGate__UserDoesNotHoldFanTokens();
 
-        uint256 tokenId = generateTokenId(eventId, userAddress, "COMMUNITY");
+        uint256 tokenId = generateTokenId(
+            eventId,
+            /*userAddress*/
+            "COMMUNITY"
+        );
 
         s_eventIdToTokenIds[eventId].push(tokenId);
         s_eventIdToEndTimestamp[eventId] = uint64(block.timestamp + 1 weeks);
@@ -263,10 +256,7 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     /// @notice Function to withdraw the collected amount for an event ID by the event manager
     /// @param eventId The ID of the event
     /// @dev Only the event manager can call this function
-    function withdrawCollectedAmountForEventId(uint64 eventId)
-        public
-        nonReentrant
-    {
+    function withdrawCollectedAmountForEventId(uint64 eventId) public {
         // Check if the caller is the event manager
         if (!checkIfCallerIsEventManager(eventId, _msgSender()))
             revert NexusEventGate__UserIsNotAnEventManager();
@@ -296,23 +286,17 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
 
     /// @notice Function to generate a token ID based on event ID, event registerer, and access level
     /// @param eventId The ID of the event
-    /// @param eventRegisterer The address of the event registerer
+    /// eventRegisterer The address of the event registerer
     /// @param accessLevel The access level for the token
     /// @return uint256 The generated token ID
     function generateTokenId(
         uint64 eventId,
-        address eventRegisterer,
+        // address eventRegisterer,
         string memory accessLevel
     ) public view returns (uint256) {
-        string memory addressToString = Strings.toHexString(
-            uint256(uint160(eventRegisterer)),
-            20
+        uint256 tokenId = uint256(
+            keccak256(abi.encodePacked(eventId, accessLevel))
         );
-        string memory concatenatedString = string(
-            abi.encodePacked(eventId, addressToString, accessLevel)
-        );
-
-        uint256 tokenId = uint256(keccak256(bytes(concatenatedString)));
 
         if (checkTokenIdExistsForEventId(eventId, tokenId))
             revert NexusEventGate__TokenIdAlreadyExists();
@@ -378,8 +362,7 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
                     fanTokenAddress
                 )
             );
-        if (!success) revert NexusEventGate__TransactionFailed();
-        return abi.decode(boolInBytes, (bool));
+        return success && abi.decode(boolInBytes, (bool));
     }
 
     /// @notice Function to check if a user owns fan tokens
@@ -534,38 +517,28 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     }
 
     /// @notice Override to prevent the transfer of tickets (Soul Bound Tokens)
-    /// @param from The address transferring the token
-    /// @param to The address receiving the token
-    /// @param id The token ID being transferred
-    /// @param value The number of tokens being transferred
-    /// @param data Additional data sent along with the transfer
     function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 value,
-        bytes memory data
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
     ) public virtual override {
         revert("NexusEventGate: Tickets are Soul Bound");
     }
 
     /// @notice Override to prevent the batch transfer of tickets (Soul Bound Tokens)
-    /// @param from The address transferring the tokens
-    /// @param to The address receiving the tokens
-    /// @param ids Array of token IDs being transferred
-    /// @param values Array of the number of tokens being transferred
-    /// @param data Additional data sent along with the batch transfer
     function safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory values,
-        bytes memory data
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
     ) public virtual override {
         revert("NexusEventGate: Tickets are Soul Bound");
     }
 
-    /// @notice Internal function to update balances after a transfer (overrides ERC1155 and ERC1155Supply)
+    /// @notice Default Override Function: Internal function to update balances after a transfer (overrides ERC1155 and ERC1155Supply)
     /// @param from The address to transfer from
     /// @param to The address to transfer to
     /// @param ids Array of token IDs to transfer
