@@ -108,9 +108,12 @@ contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
         ] = PSG_OFFICIAL_ROLE;
 
         /// Assign the contract deployer as the official for each role.
-        s_roleToOfficial[BAR_OFFICIAL_ROLE] = _msgSender();
-        s_roleToOfficial[JUV_OFFICIAL_ROLE] = _msgSender();
-        s_roleToOfficial[PSG_OFFICIAL_ROLE] = _msgSender();
+        // s_roleToOfficial[BAR_OFFICIAL_ROLE] = _msgSender();
+        // s_roleToOfficial[JUV_OFFICIAL_ROLE] = _msgSender();
+        // s_roleToOfficial[PSG_OFFICIAL_ROLE] = _msgSender();
+        s_roleToOfficial[BAR_OFFICIAL_ROLE] = 0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701;
+        s_roleToOfficial[JUV_OFFICIAL_ROLE] = 0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701;
+        s_roleToOfficial[PSG_OFFICIAL_ROLE] = 0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701;
     }
 
     /// @notice Function to add funds to an event's Nexus drop.
