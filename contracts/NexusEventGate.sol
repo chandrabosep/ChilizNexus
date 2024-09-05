@@ -11,6 +11,8 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 error NexusEventGate__AccessLevelAlreadyExists();
 error NexusEventGate__AccessLevelDoesNotExists();
 error NexusEventGate__InvalidInputAddress();
+error NexusEventGate__InvalidFanTokenAddress();
+error NexusEventGate__NoUserAddressesProvided();
 error NexusEventGate__EventIdAlreadyExists();
 error NexusEventGate__TokenIdAlreadyExists();
 error NexusEventGate__TokenIdDoesNotExists();
@@ -52,12 +54,33 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     /// @notice Mapping from event ID to event end timestamp
     mapping(uint64 => uint64) private s_eventIdToEndTimestamp;
 
+    /// @notice Mapping from event ID to amount collected for Nexus drop
     mapping(uint64 => uint256) private s_eventIdToNexusDrop;
+
+    /// @notice Event emitted when a transfer attempt is made
+    /// @param recipient Address of the user who received the token
+    /// @param amount Amount of native tokens sent
+    event TransferAttempt(address indexed recipient, uint256 indexed amount);
+
+    /// @notice Event emitted when the base URI is updated
+    /// @param newURI The new URI that has been set
+    event BaseURIUpdated(string newURI);
+
+    /// @notice Event emitted when a live event is registered
+    /// @param eventId The ID of the registered live event
+    /// @param manager The address of the event manager
+    /// @param endTimestamp The timestamp when the event will end
+    event EventRegistered(
+        uint64 indexed eventId,
+        address indexed manager,
+        uint64 indexed endTimestamp
+    );
 
     /// @notice Constructor to initialize the contract
     constructor() ERC1155("https://chiliz-nexus/") Ownable(_msgSender()) {
         _name = "NexusEventGate";
         _symbol = "NEGT";
+        s_nexusTokenContract = 0xc01C4824339814edA70EB4639d6A7Ad23629f009;
     }
 
     /*****************************
@@ -66,34 +89,69 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
 
     /// @notice Function to set the base URI for the token metadata
     /// @param newuri The new base URI to be set
+    /// @dev Only callable by the contract owner
     function setBaseURI(string memory newuri) public onlyOwner {
         _setURI(newuri);
+        emit BaseURIUpdated(newuri);
     }
 
+    /// @notice Function to add native tokens to the Nexus drop for a specific event
+    /// @param eventId The ID of the event
     function nexusDrop(uint64 eventId) public payable {
         s_eventIdToNexusDrop[eventId] += msg.value;
     }
 
-    function trnasferAmount(uint64 eventId, address[] calldata userAddresses)
+    /// @notice Function to distribute the collected drop amount equally to the provided user addresses
+    /// @param eventId The ID of the event
+    /// @param userAddresses The array of addresses to receive the drop
+    /// @dev The drop is distributed equally; only callable by the contract owner
+    function distributeDrop(uint64 eventId, address[] calldata userAddresses)
         public
         onlyOwner
+        nonReentrant
     {
-        if (!checkIfCallerIsEventManager(eventId, _msgSender())) revert();
         uint256 collectedAmount = s_eventIdToNexusDrop[eventId];
         if (collectedAmount == 0)
             revert NexusEventGate__ZeroAmountForTokenDrop();
-        uint256 len = userAddresses.length;
-        uint256 amountPerUser = (collectedAmount * (10**18)) / len;
-        if (amountPerUser == 0)
+        if (address(this).balance < collectedAmount)
             revert NexusEventGate__InsufficientBalanceForTokenDrop();
 
-        for (uint256 i; i < len; ++i) {
+        uint256 len = userAddresses.length;
+        if (len == 0) {
+            revert NexusEventGate__NoUserAddressesProvided();
+        }
+
+        uint256 amountPerUser = (collectedAmount) / len;
+        if (amountPerUser == 0)
+            revert NexusEventGate__InsufficientBalanceForTokenDrop();
+        
+
+        // Update state first to prevent reentrancy
+        s_eventIdToNexusDrop[eventId] = 0;
+
+        for (uint256 i = 0; i < len; ++i) {
+            if (userAddresses[i] == address(0)) {
+                revert NexusEventGate__InvalidInputAddress();
+            }
+
             (bool check, ) = userAddresses[i].call{value: amountPerUser}("");
             if (!check) revert NexusEventGate__TransactionFailed();
+            emit TransferAttempt(userAddresses[i], amountPerUser);
         }
     }
 
-    /// @notice Function to register a live event
+    /// @notice Function to get the total amount collected for Nexus drop for an event
+    /// @param eventId The ID of the event
+    /// @return uint256 The amount collected for the Nexus drop
+    function getCollectedAmountForNexusDrop(uint64 eventId)
+        public
+        view
+        returns (uint256)
+    {
+        return s_eventIdToNexusDrop[eventId];
+    }
+
+    /// @notice Function to register a live event with access levels and ticket prices
     /// @param eventId The ID of the event
     /// @param fanTokenAddress The address of the fan token contract
     /// @param userAddress The address of the event manager
@@ -101,6 +159,7 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     /// @param accessLevels Array of access levels for the event
     /// @param ticketPrices Array of ticket prices corresponding to access levels
     /// @param ticketLimits Array of ticket limits corresponding to access levels
+    /// @dev Only callable by the contract owner
     function registerLiveEvent(
         uint64 eventId,
         address fanTokenAddress,
@@ -112,7 +171,7 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     ) public onlyOwner {
         // Check if the fan token address is supported
         if (!isSupportedFanToken(fanTokenAddress))
-            revert NexusEventGate__InvalidInputAddress();
+            revert NexusEventGate__InvalidFanTokenAddress();
 
         // Check if the event ID already exists
         if (
@@ -151,10 +210,13 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
             s_tokenIdToTicketPrice[tokenId] = ticketPrices[i];
             s_tokenIdToTicketLimit[tokenId] = ticketLimits[i];
         }
-        s_eventIdToEndTimestamp[eventId] = endTimestamp;
+        s_eventIdToEndTimestamp[eventId] = uint64(block.timestamp + 1 weeks);
+        // s_eventIdToEndTimestamp[eventId] = endTimestamp;
 
         uint256 eventManagerTokenId = getTokenIdOfAnEventManager(eventId);
         _mint(userAddress, eventManagerTokenId, 1, "");
+
+        emit EventRegistered(eventId, userAddress, endTimestamp);
     }
 
     /// @notice Function to register a community event
@@ -163,6 +225,7 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     /// @param userAddress The address of the event manager
     /// @param endTimestamp The end timestamp of the event
     /// @param ticketLimit The limit on the number of tickets
+    /// @dev Only callable by the contract owner
     function registerCommunityEvent(
         uint64 eventId,
         address fanTokenAddress,
@@ -172,7 +235,7 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     ) public {
         // Check if the fan token address is supported
         if (!isSupportedFanToken(fanTokenAddress))
-            revert NexusEventGate__InvalidInputAddress();
+            revert NexusEventGate__InvalidFanTokenAddress();
 
         // Check if the event ID already exists
         if (
@@ -189,162 +252,17 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
         uint256 tokenId = generateTokenId(eventId, userAddress, "COMMUNITY");
 
         s_eventIdToTokenIds[eventId].push(tokenId);
-        s_eventIdToEndTimestamp[eventId] = endTimestamp;
+        s_eventIdToEndTimestamp[eventId] = uint64(block.timestamp + 1 weeks);
+        // s_eventIdToEndTimestamp[eventId] = endTimestamp;
         s_tokenIdToTicketLimit[tokenId] = ticketLimit;
         _mint(userAddress, tokenId, 1, "");
+
+        emit EventRegistered(eventId, userAddress, endTimestamp);
     }
 
-    /// @notice Function to mint a live event ticket
+    /// @notice Function to withdraw the collected amount for an event ID by the event manager
     /// @param eventId The ID of the event
-    /// @param fanTokenAddress The address of the fan token contract
-    /// @param to The address to mint the ticket to
-    /// @param accessLevel The access level for the ticket
-    function mintLiveTicket(
-        uint64 eventId,
-        address fanTokenAddress,
-        address to,
-        string calldata accessLevel
-    ) public payable nonReentrant {
-        // Check if the provided recipient address is valid
-        if (to == address(0)) {
-            revert NexusEventGate__InvalidInputAddress();
-        }
-        // Check if the provided fanToken is supported
-        if (!isSupportedFanToken(fanTokenAddress)) {
-            revert NexusEventGate__InvalidInputAddress();
-        }
-
-        // Check if the user owns fan tokens
-        if (!checkUserOwnFanTokens(fanTokenAddress, _msgSender()))
-            revert NexusEventGate__UserDoesNotHoldFanTokens();
-
-        // Generate or fetch the token ID associated with the event and access level
-        uint256 tokenId = getTokenIdOfAccessLevel(eventId, accessLevel);
-        if (tokenId == getTokenIdOfAnEventManager(eventId))
-            revert NexusEventGate__UserIsNotAnEventManager();
-        if (getTicketLimit(tokenId) < uint8(totalSupply(tokenId)) + 1)
-            revert NexusEventGate__TicketLimitExceeded();
-        if (getEventEndTimestamp(eventId) < uint64(block.timestamp))
-            revert NexusEventGate__EventEnded();
-
-        // Check if the correct ticket price was paid
-        if (getTicketPriceFromTokenId(tokenId) != msg.value)
-            revert NexusEventGate__IncorrectTicketPrice();
-
-        s_collectedAmountForEventId[eventId] += msg.value;
-
-        // Mint the ticket to the recipient
-        _mint(to, tokenId, 1, "");
-    }
-
-    /// @notice Function for event managers to mint live event tickets
-    /// @param eventId The ID of the event
-    /// @param fanTokenAddress The address of the fan token contract
-    /// @param to The address to mint the ticket to
-    /// @param accessLevel The access level for the ticket
-    function mintLiveTicketByEventManager(
-        uint64 eventId,
-        address fanTokenAddress,
-        address to,
-        string calldata accessLevel
-    ) public {
-        // Check if the provided recipient address is valid
-        if (to == address(0)) {
-            revert NexusEventGate__InvalidInputAddress();
-        }
-        // Check if the provided fanToken is supported
-        if (!isSupportedFanToken(fanTokenAddress))
-            revert NexusEventGate__InvalidInputAddress();
-
-        if (!checkAccessLevelExists(eventId, accessLevel))
-            revert NexusEventGate__AccessLevelDoesNotExists();
-
-        // Check if the caller is the event manager
-        if (!checkIfCallerIsEventManager(eventId, _msgSender())) {
-            revert NexusEventGate__UserIsNotAnEventManager();
-        }
-        // Check if the user owns fan tokens
-        if (!checkUserOwnFanTokens(fanTokenAddress, _msgSender()))
-            revert NexusEventGate__UserDoesNotHoldFanTokens();
-
-        uint256 tokenId = getTokenIdOfAccessLevel(eventId, accessLevel);
-        if (getTicketLimit(tokenId) < uint8(totalSupply(tokenId)) + 1)
-            revert NexusEventGate__TicketLimitExceeded();
-        if (getEventEndTimestamp(eventId) < uint64(block.timestamp))
-            revert NexusEventGate__EventEnded();
-
-        // Mint the ticket to the recipient
-        _mint(to, tokenId, 1, "");
-    }
-
-    /// @notice Function to mint a community event ticket
-    /// @param eventId The ID of the event
-    /// @param fanTokenAddress The address of the fan token contract
-    /// @param to The address to mint the ticket to
-    function mintCommunityTicket(
-        uint64 eventId,
-        address fanTokenAddress,
-        address to
-    ) public {
-        // Check if the provided recipient address is valid
-        if (to == address(0)) revert NexusEventGate__InvalidInputAddress();
-
-        // Check if the provided fanToken is supported
-        if (!isSupportedFanToken(fanTokenAddress))
-            revert NexusEventGate__InvalidInputAddress();
-
-        // Check if the user owns fan tokens
-        if (!checkUserOwnFanTokens(fanTokenAddress, _msgSender()))
-            revert NexusEventGate__UserDoesNotHoldFanTokens();
-
-        uint256 tokenId = getTokenIdOfAnEventManager(eventId);
-
-        if (getTicketLimit(tokenId) < uint8(totalSupply(tokenId)) + 1)
-            revert NexusEventGate__TicketLimitExceeded();
-        if (getEventEndTimestamp(eventId) < uint64(block.timestamp))
-            revert NexusEventGate__EventEnded();
-
-        // Mint the ticket to the recipient
-        _mint(to, tokenId, 1, "");
-    }
-
-    /// @notice Function to register a new access level for an event
-    /// @param eventId The ID of the event
-    /// @param newAccessLevel The new access level to register
-    /// @param newTicketPrice The price for the new access level
-    /// @param newTicketLimit The ticket limit for the new access level
-    function registerNewAccessLevel(
-        uint64 eventId,
-        string calldata newAccessLevel,
-        uint256 newTicketPrice,
-        uint8 newTicketLimit
-    ) public {
-        // Check if the caller is the event manager for the specified event
-        if (!checkIfCallerIsEventManager(eventId, _msgSender())) {
-            revert NexusEventGate__UserIsNotAnEventManager();
-        }
-
-        // Check if the access level already exists for the event
-        if (checkAccessLevelExists(eventId, newAccessLevel)) {
-            revert NexusEventGate__AccessLevelAlreadyExists();
-        }
-
-        // Generate a new token ID for the provided access level
-        uint256 tokenId = generateTokenId(
-            eventId,
-            _msgSender(),
-            newAccessLevel
-        );
-
-        // Update the mappings with the new access level and its corresponding data
-        s_eventIdToTokenIds[eventId].push(tokenId);
-        s_eventIdToAccessLevels[eventId].push(newAccessLevel);
-        s_tokenIdToTicketPrice[tokenId] = newTicketPrice;
-        s_tokenIdToTicketLimit[tokenId] = newTicketLimit;
-    }
-
-    /// @notice Function for event managers to withdraw the collected amount for an event
-    /// @param eventId The ID of the event
+    /// @dev Only the event manager can call this function
     function withdrawCollectedAmountForEventId(uint64 eventId)
         public
         nonReentrant
@@ -364,6 +282,7 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
 
     /// @notice Function to update the address of the Nexus Token Contract
     /// @param newNexusTokenAddress The new address to be set
+    /// @dev Only callable by the contract owner
     function updateNexusTokenContractAddress(address newNexusTokenAddress)
         public
         onlyOwner
@@ -615,6 +534,11 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     }
 
     /// @notice Override to prevent the transfer of tickets (Soul Bound Tokens)
+    /// @param from The address transferring the token
+    /// @param to The address receiving the token
+    /// @param id The token ID being transferred
+    /// @param value The number of tokens being transferred
+    /// @param data Additional data sent along with the transfer
     function safeTransferFrom(
         address from,
         address to,
@@ -626,6 +550,11 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     }
 
     /// @notice Override to prevent the batch transfer of tickets (Soul Bound Tokens)
+    /// @param from The address transferring the tokens
+    /// @param to The address receiving the tokens
+    /// @param ids Array of token IDs being transferred
+    /// @param values Array of the number of tokens being transferred
+    /// @param data Additional data sent along with the batch transfer
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -649,4 +578,7 @@ contract NexusEventGate is ERC1155, ReentrancyGuard, Ownable, ERC1155Supply {
     ) internal override(ERC1155, ERC1155Supply) {
         super._update(from, to, ids, values);
     }
+
+    // Function to receive Ether into the contract
+    receive() external payable {}
 }
