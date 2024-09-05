@@ -2,17 +2,9 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { Card, CardContent } from "./ui/card";
-import {
-	Linkedin,
-	LinkIcon,
-	LucideLink,
-	SquareArrowOutUpRight,
-	Triangle,
-	Twitter,
-} from "lucide-react";
+import { LucideLink, SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import urlBuilder from "@sanity/image-url";
 import { urlFor } from "@/lib/sanity";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -115,13 +107,15 @@ export default function ClubCard({ data }: any) {
 									)
 								)}
 							</div>
-						</	div>
+						</div>
 						<div className="flex items-center gap-x-2 pt-5">
 							<Input
 								placeholder="Fund"
 								onClick={handleFundClick}
 							/>
-							<Button onClick={handleFundClick} className="">Fund</Button>
+							<Button onClick={handleFundClick} className="">
+								Fund
+							</Button>
 						</div>
 					</div>
 				)}

@@ -41,7 +41,7 @@ export default function CommunityCard({ data,type }: any) {
 							<span className="line-clamp-1">{data.address}</span>
 						</div>
 						<div className="prose text-muted-foreground">
-							<p className="line-clamp-3">{data.description}</p>
+							<p className="line-clamp-2">{data.description}</p>
 						</div>
 					</div>
 					<Button className="flex items-end w-full bg-primaryColor hover:bg-primaryColor h-fit">
