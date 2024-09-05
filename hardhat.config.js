@@ -9,6 +9,7 @@ module.exports = {
     chilizSpicy: {
       url: "https://spicy-rpc.chiliz.com",
       accounts: [process.env.PRIVATE_KEY],
+      timeout: 200000,
     },
     baseSepolia: {
       url: process.env.BASE_SEPOLIA_RPC_URL,
