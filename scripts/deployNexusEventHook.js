@@ -27,5 +27,5 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-// yarn hardhat run scripts/deployNexusEventHook.js --network chilizSpicy
-// yarn hardhat verify --network chilizSpicy DEPLOYED_CONTRACT_ADDRESS
+// yarn hardhat run scripts/deployNexusEventHook.js --network baseSepolia
+// yarn hardhat verify --network baseSepolia DEPLOYED_CONTRACT_ADDRESS
