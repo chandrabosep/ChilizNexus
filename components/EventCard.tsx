@@ -4,6 +4,7 @@ import { Card, CardContent } from "./ui/card";
 import { CalendarIcon, ClockIcon, MapPinIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 export default function EventCard({ data }: any) {
 	const [flipped, setFlipped] = useState(false);
@@ -11,11 +12,14 @@ export default function EventCard({ data }: any) {
 		setFlipped(!flipped);
 	};
 
+	const handleFundClick = async (e: React.MouseEvent) => {
+		e.stopPropagation();
+	};
 	return (
 		<>
 			<Card
 				onClick={handleCardClick}
-				className="flex rounded-lg overflow-hidden shadow-lg h-[20rem] w-[43rem]"
+				className="flex rounded-lg overflow-hidden shadow-lg h-[23rem] w-[43rem]"
 			>
 				<div className="relative h-full w-1/2">
 					<Image
@@ -66,7 +70,7 @@ export default function EventCard({ data }: any) {
 								</p>
 								<span className="text-xl font-bold">24</span>
 							</div>
-							<div className="h-full flex flex-col gap-y-2 py-4">
+							<div className="h-full flex flex-col gap-y-2 pt-4">
 								<h6 className="text-lg font-semibold text-primaryColor underline decoration-wavy decoration-secondaryColor">
 									Tickets
 								</h6>
@@ -82,11 +86,21 @@ export default function EventCard({ data }: any) {
 									
 								</div>
 							</div>
-							<Button className="flex items-end mt-auto w-full bg-primaryColor hover:bg-primaryColor h-fit">
-								Register Now
-							</Button>
+							<div className="flex items-center gap-x-2 py-2">
+								<Input
+									placeholder="Fund"
+									onClick={handleFundClick}
+								/>
+								<Button onClick={handleFundClick} className="">
+									Fund
+								</Button>
+							</div>
+							
 						</div>
 					)}
+					<Button className="flex items-end mt-auto w-full bg-primaryColor hover:bg-primaryColor h-fit">
+								Register Now
+							</Button>
 				</div>
 			</Card>
 		</>
