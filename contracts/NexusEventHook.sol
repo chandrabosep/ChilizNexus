@@ -63,9 +63,9 @@ error NexusEventHook__NoUserAddressesProvided();
 contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
     /// @notice Enum defining the types of events: LIVE, VIRTUAL, and COMMUNITY.
     enum EventType {
-        LIVE,
-        VIRTUAL,
-        COMMUNITY
+        LIVE, // Live event type
+        VIRTUAL, // Virtual event type
+        COMMUNITY // Community event type
     }
 
     /// @notice ISP contract used to manage attestations.
@@ -80,16 +80,66 @@ contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
     /// @notice Mapping from event ID to the collected drop amount.
     mapping(uint64 => uint256) private s_eventIdToNexusDrop;
 
+    string private s_baseURI;
+
     /// @notice Event emitted when a transfer attempt is made.
     /// @param recipient The address of the recipient of the token drop.
     /// @param amount The amount of native tokens distributed.
     event TransferAttempt(address indexed recipient, uint256 indexed amount);
 
+    /// @notice Event emitted when a Nexus drop is added.
+    /// @param eventId The ID of the event.
+    /// @param amountAdded The amount of funds added.
+    event NexusDropAdded(uint64 indexed eventId, uint256 amountAdded);
+
+    /// @notice Event emitted when a Nexus drop is distributed.
+    /// @param eventId The ID of the event.
+    /// @param recipients The array of recipient addresses.
+    /// @param amountPerUser The amount distributed per user.
+    event NexusDropDistributed(
+        uint64 indexed eventId,
+        address[] recipients,
+        uint256 amountPerUser
+    );
+
+    /// @notice Event emitted when an official is updated for a role.
+    /// @param fanTokenAddress The address of the fan token.
+    /// @param newOfficial The address of the new official.
+    event OfficialUpdated(address indexed fanTokenAddress, address newOfficial);
+
+    /// @notice Event emitted when a role is added for a fan token.
+    /// @param fanTokenAddress The address of the fan token.
+    /// @param role The new role.
+    /// @param official The address of the official.
+    event RoleAdded(
+        address indexed fanTokenAddress,
+        bytes32 role,
+        address official
+    );
+
+    /// @notice Event emitted when an attestation is received and NFT minted.
+    /// @param attester The address of the attester.
+    /// @param attestationId The ID of the attestation.
+    event AttestationReceived(
+        address indexed attester,
+        uint64 indexed attestationId
+    );
+
+    /// @notice Event emitted when an attestation is revoked and the NFT burned.
+    /// @param attester The address of the attester.
+    /// @param attestationId The ID of the attestation.
+    event AttestationRevoked(
+        address indexed attester,
+        uint64 indexed attestationId
+    );
+
     /// @notice Constructor to initialize the contract.
     /// @dev The contract deployer is assigned as the official for the defined roles.
-    constructor() ERC721("NexusBasedEvent", "NBE") Ownable(_msgSender()) {
+    constructor() ERC721("ChilizNexusEvent", "CNE") Ownable(_msgSender()) {
         /// Initialize the ISP contract address.
-        s_baseIspContract = ISP(0x2b3224D080452276a76690341e5Cfa81A945a985);
+        s_baseIspContract = ISP(0x4e4af2a21ebf62850fD99Eb6253E1eFBb56098cD);
+
+        s_baseURI = "https://chiliz-nexus/events/";
 
         /// Define roles for BAR, JUV, and PSG official fan tokens.
         bytes32 BAR_OFFICIAL_ROLE = keccak256("BAR_OFFICIAL_ROLE");
@@ -108,18 +158,26 @@ contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
         ] = PSG_OFFICIAL_ROLE;
 
         /// Assign the contract deployer as the official for each role.
-        // s_roleToOfficial[BAR_OFFICIAL_ROLE] = _msgSender();
-        // s_roleToOfficial[JUV_OFFICIAL_ROLE] = _msgSender();
-        // s_roleToOfficial[PSG_OFFICIAL_ROLE] = _msgSender();
-        s_roleToOfficial[BAR_OFFICIAL_ROLE] = 0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701;
-        s_roleToOfficial[JUV_OFFICIAL_ROLE] = 0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701;
-        s_roleToOfficial[PSG_OFFICIAL_ROLE] = 0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701;
+        s_roleToOfficial[
+            BAR_OFFICIAL_ROLE
+        ] = 0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701;
+        s_roleToOfficial[
+            JUV_OFFICIAL_ROLE
+        ] = 0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701;
+        s_roleToOfficial[
+            PSG_OFFICIAL_ROLE
+        ] = 0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701;
     }
+
+    /*****************************
+        STATE UPDATE FUNCTIONS
+    ******************************/
 
     /// @notice Function to add funds to an event's Nexus drop.
     /// @param eventId The ID of the event to add the drop amount to.
     function nexusDrop(uint64 eventId) public payable {
         s_eventIdToNexusDrop[eventId] += msg.value;
+        emit NexusDropAdded(eventId, msg.value);
     }
 
     /// @notice Function to distribute the collected drop amount equally to the provided user addresses.
@@ -157,7 +215,166 @@ contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
             if (!check) revert NexusEventHook__TransactionFailed();
             emit TransferAttempt(userAddresses[i], amountPerUser);
         }
+
+        emit NexusDropDistributed(eventId, userAddresses, amountPerUser);
     }
+
+    /// @notice Function to update the official assigned to a role.
+    /// @param fanTokenAddress The address of the fan token.
+    /// @param newOfficial The address of the new official for the role.
+    function updateOfficial(address fanTokenAddress, address newOfficial)
+        public
+        onlyOwner
+    {
+        bytes32 role = s_fanTokenAddressToRole[fanTokenAddress];
+        if (role == bytes32(0)) revert NexusEventHook__RoleDoesNotExist();
+        s_roleToOfficial[role] = newOfficial;
+        emit OfficialUpdated(fanTokenAddress, newOfficial);
+    }
+
+    /// @notice Function to add a new role and assign an official.
+    /// @param fanTokenAddress The address of the fan token.
+    /// @param newRole The name of the new role.
+    /// @param official The address of the official for the role.
+    function addRole(
+        address fanTokenAddress,
+        string calldata newRole,
+        address official
+    ) public onlyOwner {
+        if (doesRoleExistForFanToken(fanTokenAddress))
+            revert NexusEventHook__RoleAlreadyExists();
+        bytes32 role = keccak256(bytes(newRole));
+        s_fanTokenAddressToRole[fanTokenAddress] = role;
+        s_roleToOfficial[role] = official;
+        emit RoleAdded(fanTokenAddress, role, official);
+    }
+
+    /// @notice Function to update the ISP contract address.
+    /// @param newIspContract The new ISP contract address.
+    function updateIspContract(address newIspContract) public onlyOwner {
+        s_baseIspContract = ISP(newIspContract);
+    }
+
+    function updateBaseURI(string calldata newBaseURI) public onlyOwner {
+        s_baseURI = newBaseURI;
+    }
+
+    /*****************************
+        HELPER VIEW FUNCTIONS
+    ******************************/
+
+    function _baseURI() internal view virtual override returns (string memory) {
+        return s_baseURI;
+    }
+
+    function getBaseURI() public view returns (string memory) {
+        return _baseURI();
+    }
+
+    /// @notice Function to check if an event exists by verifying the owner of the NFT.
+    /// @param attestationId The ID of the attestation.
+    /// @return bool Returns true if the event exists, false otherwise.
+    function checkEventExists(uint64 attestationId) public view returns (bool) {
+        try this.ownerOf(attestationId) returns (address owner) {
+            return owner != address(0);
+        } catch {
+            return false;
+        }
+    }
+
+    /// @notice Function to check if a given address is the attester for a specific event.
+    /// @param attestationId The ID of the attestation.
+    /// @param userAddress The address to check.
+    /// @return bool Returns true if the user is the attester, false otherwise.
+    function checkAttester(uint64 attestationId, address userAddress)
+        public
+        view
+        returns (bool)
+    {
+        try this.ownerOf(attestationId) returns (address owner) {
+            return owner == userAddress;
+        } catch {
+            // In case ownerOf reverts (e.g., attestation does not exist), return false
+            return false;
+        }
+    }
+
+    /// @notice Function to get all hosted events by a user.
+    /// @param userAddress The address of the user.
+    /// @return uint64[] Returns an array of attestation IDs hosted by the user.
+    function getHostedEvents(address userAddress)
+        public
+        view
+        returns (uint64[] memory)
+    {
+        /// Get the total number of events hosted by the user.
+        uint256 totalUserEvents = balanceOf(userAddress);
+        uint64[] memory eventIds = new uint64[](totalUserEvents);
+
+        /// Loop through each event hosted by the user and populate the event IDs.
+        for (uint256 i = 0; i < totalUserEvents; ++i) {
+            eventIds[i] = uint64(tokenOfOwnerByIndex(userAddress, i));
+        }
+
+        return eventIds;
+    }
+
+    /// @notice Getter function to retrieve the role associated with a fan token address.
+    /// @param fanTokenAddress The address of the fan token.
+    /// @return bytes32 The role associated with the fan token.
+    function getRoleForFanToken(address fanTokenAddress)
+        public
+        view
+        returns (bytes32)
+    {
+        return s_fanTokenAddressToRole[fanTokenAddress];
+    }
+
+    /// @notice Getter function to retrieve the official associated with a specific role.
+    /// @param role The role to query.
+    /// @return address The official assigned to the role.
+    function getOfficialAddressForRole(bytes32 role)
+        public
+        view
+        returns (address)
+    {
+        return s_roleToOfficial[role];
+    }
+
+    /// @notice Function to check if a role exists for a fan token address.
+    /// @param fanTokenAddress The address of the fan token.
+    /// @return bool Returns true if the role exists, false otherwise.
+    function doesRoleExistForFanToken(address fanTokenAddress)
+        public
+        view
+        returns (bool)
+    {
+        return s_fanTokenAddressToRole[fanTokenAddress] != bytes32(0);
+    }
+
+    /// @notice Function to check if an official is assigned to a given role.
+    /// @param role The role to check.
+    /// @return bool Returns true if an official is assigned, false otherwise.
+    function isOfficialAssigned(bytes32 role) public view returns (bool) {
+        return s_roleToOfficial[role] != address(0);
+    }
+
+    /// @notice Function to check if a specific user is an official for a fan token.
+    /// @param fanTokenAddress The address of the fan token.
+    /// @param userAddress The address of the user.
+    /// @return bool Returns true if the user is an official, false otherwise.
+    function isOfficial(address fanTokenAddress, address userAddress)
+        public
+        view
+        returns (bool)
+    {
+        bytes32 role = s_fanTokenAddressToRole[fanTokenAddress];
+        return s_roleToOfficial[role] == userAddress;
+    }
+
+    /*****************************
+        HELPER HOOK FUNCTIONS
+    ******************************/
 
     /// @notice Function to check the attestation and validate the event and attester.
     /// @param attestationId The ID of the attestation.
@@ -187,12 +404,20 @@ contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
         /// Convert eventTypeUint into an EventType enum.
         EventType eventType = EventType(eventTypeUint);
 
+        /// Ensure that the eventTypeUint is within a valid range for the EventType enum.
+        if (eventTypeUint > uint256(EventType.COMMUNITY))
+            revert NexusEventHook__InvalidEventType();
+
+        uint256 currentTime = block.timestamp;
+
         /// Check if the event is at least one week in the future.
-        if (eventTimestamp < block.timestamp + 1 weeks)
+        if (eventTimestamp < currentTime + 1 weeks)
             revert NexusEventHook__EventMustBeAtLeastOneWeekInFuture();
+
         /// Check if the event is not too far in the future (more than 52 weeks).
-        if (eventTimestamp > block.timestamp + 52 weeks)
+        if (eventTimestamp > currentTime + 52 weeks)
             revert NexusEventHook__EventTimestampTooFarInFuture();
+
         /// Check if the event already exists.
         if (checkEventExists(attestationId))
             revert NexusEventHook__DuplicateEvent();
@@ -203,9 +428,9 @@ contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
                 revert NexusEventHook__AttesterMustBeAnOfficial();
             /// If event type is neither VIRTUAL nor COMMUNITY, revert.
         } else if (
-            !(eventType == EventType.VIRTUAL ||
-                eventType == EventType.COMMUNITY)
+            eventType != EventType.VIRTUAL && eventType != EventType.COMMUNITY
         ) {
+            /// If the event type is neither VIRTUAL nor COMMUNITY, revert.
             revert NexusEventHook__EventMustBeVirtualOrCommunity();
         }
     }
@@ -221,119 +446,9 @@ contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
         checkAttester(attestationId, attester);
     }
 
-    /// @notice Function to update the official assigned to a role.
-    /// @param fanTokenAddress The address of the fan token.
-    /// @param newOfficial The address of the new official for the role.
-    /// @dev Only callable by the contract owner.
-    function updateRole(address fanTokenAddress, address newOfficial)
-        public
-        onlyOwner
-    {
-        bytes32 role = s_fanTokenAddressToRole[fanTokenAddress];
-        if (role == bytes32(0)) revert NexusEventHook__RoleDoesNotExist();
-        s_roleToOfficial[role] = newOfficial;
-    }
-
-    /// @notice Function to add a new role and assign an official.
-    /// @param fanTokenAddress The address of the fan token.
-    /// @param newRole The name of the new role.
-    /// @param official The address of the official for the role.
-    /// @dev Only callable by the contract owner.
-    function addRole(
-        address fanTokenAddress,
-        string calldata newRole,
-        address official
-    ) public onlyOwner {
-        if (doesRoleExist(fanTokenAddress))
-            revert NexusEventHook__RoleAlreadyExists();
-        bytes32 role = keccak256(bytes(newRole));
-        s_fanTokenAddressToRole[fanTokenAddress] = role;
-        s_roleToOfficial[role] = official;
-    }
-
-    /// @notice Function to check if an event exists by verifying the owner of the NFT.
-    /// @param attestationId The ID of the attestation.
-    /// @return bool Returns true if the event exists, false otherwise.
-    function checkEventExists(uint64 attestationId) public view returns (bool) {
-        return ownerOf(attestationId) != address(0);
-    }
-
-    /// @notice Function to check if a given address is the attester for a specific event.
-    /// @param attestationId The ID of the attestation.
-    /// @param userAddress The address to check.
-    /// @return bool Returns true if the user is the attester, false otherwise.
-    function checkAttester(uint64 attestationId, address userAddress)
-        public
-        view
-        returns (bool)
-    {
-        return ownerOf(attestationId) == userAddress;
-    }
-
-    /// @notice Function to get all hosted events by a user.
-    /// @param userAddress The address of the user.
-    /// @return uint64[] Returns an array of attestation IDs hosted by the user.
-    function getHostedEvents(address userAddress)
-        public
-        view
-        returns (uint64[] memory)
-    {
-        /// Get the total number of events hosted by the user.
-        uint256 totalUserEvents = balanceOf(userAddress);
-        uint64[] memory eventIds = new uint64[](totalUserEvents);
-
-        /// Loop through each event hosted by the user and populate the event IDs.
-        for (uint256 i = 0; i < totalUserEvents; ++i) {
-            eventIds[i] = uint64(tokenOfOwnerByIndex(userAddress, i));
-        }
-
-        return eventIds;
-    }
-
-    /// @notice Getter function to retrieve the role associated with a fan token address.
-    /// @param fanTokenAddress The address of the fan token.
-    /// @return bytes32 The role associated with the fan token.
-    function getFanTokenAddressToRole(address fanTokenAddress)
-        public
-        view
-        returns (bytes32)
-    {
-        return s_fanTokenAddressToRole[fanTokenAddress];
-    }
-
-    /// @notice Getter function to retrieve the official associated with a specific role.
-    /// @param role The role to query.
-    /// @return address The official assigned to the role.
-    function getRoleToOfficial(bytes32 role) public view returns (address) {
-        return s_roleToOfficial[role];
-    }
-
-    /// @notice Function to check if a role exists for a fan token address.
-    /// @param fanTokenAddress The address of the fan token.
-    /// @return bool Returns true if the role exists, false otherwise.
-    function doesRoleExist(address fanTokenAddress) public view returns (bool) {
-        return s_fanTokenAddressToRole[fanTokenAddress] != bytes32(0);
-    }
-
-    /// @notice Function to check if an official is assigned to a given role.
-    /// @param role The role to check.
-    /// @return bool Returns true if an official is assigned, false otherwise.
-    function isOfficialAssigned(bytes32 role) public view returns (bool) {
-        return s_roleToOfficial[role] != address(0);
-    }
-
-    /// @notice Function to check if a specific user is an official for a fan token.
-    /// @param fanTokenAddress The address of the fan token.
-    /// @param userAddress The address of the user.
-    /// @return bool Returns true if the user is an official, false otherwise.
-    function isOfficial(address fanTokenAddress, address userAddress)
-        public
-        view
-        returns (bool)
-    {
-        bytes32 role = s_fanTokenAddressToRole[fanTokenAddress];
-        return s_roleToOfficial[role] == userAddress;
-    }
+    /*****************************
+        ISP HOOK FUNCTIONS
+    ******************************/
 
     /// @notice Function to handle received attestations and mint the corresponding NFT.
     /// @param attester The address of the attester.
@@ -346,6 +461,7 @@ contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
     ) public payable {
         checkAttestationHook(attestationId, attester);
         _mint(attester, attestationId);
+        emit AttestationReceived(attester, attestationId);
     }
 
     /// @notice Fallback function to handle attestations with ERC20 tokens.
@@ -373,6 +489,7 @@ contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
     ) public payable {
         checkRevocationHook(attestationId, attester);
         _burn(attestationId);
+        emit AttestationRevoked(attester, attestationId);
     }
 
     /// @notice Fallback function to handle revocation with ERC20 tokens.
@@ -394,6 +511,10 @@ contract NexusEventHook is ERC721Enumerable, ISPHook, Ownable {
     function totalEvents() public view returns (uint64) {
         return s_baseIspContract.attestationCounter();
     }
+
+    /*****************************
+        OVERRIDE FUNCTIONS
+    ******************************/
 
     /// @notice Override to disable token transfers for event NFTs.
     function _safeTransfer(
