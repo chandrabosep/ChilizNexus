@@ -18,12 +18,24 @@ import {
 import { client } from "@/lib/sanity";
 import { v4 as uuidv4 } from "uuid";
 import { PlusIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { SignProtocolClient, SpMode, EvmChains } from "@ethsign/sp-sdk";
 import { parseEther } from "viem";
 import { EventGateAbi } from "@/contracts/EventGate";
 import { useToast } from "@/hooks/use-toast";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import ShareButtons from "./ShareBtn";
+import Link from "next/link";
+import Image from "next/image";
 
 const formSchema = z.object({
 	name: z.string().min(1, { message: "Name is required" }),
@@ -48,10 +60,11 @@ export default function CreateEvent({ data }: any) {
 			price: "1",
 		},
 	]);
-	const { writeContract, isSuccess, error } = useWriteContract();
+	const { writeContract, isSuccess } = useWriteContract();
 	const [parseId, setParseId] = useState<any>();
 	const [values, setValues] = useState();
 	const [disabled, setDisabled] = useState(true);
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const SignClient = new SignProtocolClient(SpMode.OnChain, {
 		chain: EvmChains.baseSepolia,
 	});
@@ -149,14 +162,6 @@ export default function CreateEvent({ data }: any) {
 							"Content-Type": "application/json",
 							Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_TOKEN}`,
 						},
-					})
-					.then(() => {
-						new Promise((resolve) => setTimeout(resolve, 3000));
-						toast({
-							title: "Event created successfully",
-							description:
-								"You can now view it in the events tab",
-						});
 					});
 			} else {
 				toast({
@@ -207,6 +212,17 @@ export default function CreateEvent({ data }: any) {
 			console.error("Error in onSubmit:", error);
 		}
 	};
+
+	useEffect(() => {
+		if (isSuccess) {
+			toast({
+				title: "Created Successfully",
+				description: "You have successfully Created Live Event.",
+			});
+			setIsDialogOpen(true);
+		}
+	}, [isSuccess]);
+
 	return (
 		<div>
 			<div className="border-r-4 border-x-gray-200 pr-8 w-full">
@@ -428,6 +444,41 @@ export default function CreateEvent({ data }: any) {
 					</form>
 				</Form>
 			</div>
+			<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+				<DialogContent className="max-w-xl">
+					<DialogHeader>
+						<DialogTitle className="text-xl text-primaryColor underline decoration-secondaryColor decoration-2 underline-offset-4">{`ERC 721 SBT (Soul token) has been minted on Base`}</DialogTitle>
+						<div className="flex flex-col gap-y-3 items-center justify-center pt-7 py-5">
+							<Image
+								src="/nft2.png"
+								alt="Chiliz"
+								width={1000}
+								height={1000}
+								className="w-2/3 rounded-xl"
+							/>
+							<ShareButtons />
+						</div>
+					</DialogHeader>
+					<DialogFooter>
+						<Link
+							href={`https://testnet-scan.sign.global/schema/onchain_evm_84532_0x1dc`}
+							target="_blank"
+							className="border border-primaryColor bg-transparent text-primaryColor w-1/2 flex rounded"
+						>
+							<Button className="bg-transparent hover:bg-transparent mx-auto w-fit text-primaryColor">
+								View Attestation
+							</Button>
+						</Link>
+
+						<Button
+							className="bg-primaryColor hover:bg-primaryColor w-1/2 rounded"
+							onClick={() => setIsDialogOpen(false)}
+						>
+							Cool
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }
