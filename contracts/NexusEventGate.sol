@@ -80,7 +80,7 @@ contract NexusEventGate is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     {
         _name = "NexusEventGate"; // Initialize contract name
         _symbol = "NEGT"; // Initialize contract symbol
-        s_nexusTokenContract = 0xe2899bddFD890e320e643044c6b95B9B0b84157A; // Set the Nexus Token contract address
+        s_nexusTokenContract = 0xc01C4824339814edA70EB4639d6A7Ad23629f009; // Set the Nexus Token contract address
     }
 
     /*****************************
@@ -507,6 +507,10 @@ contract NexusEventGate is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     /*****************************
         GETTER VIEW FUNCTIONS
     ******************************/
+
+    function getNexusTokenAddress() public view returns(address){
+        return s_nexusTokenContract;
+    }
 
     /// @notice Function to get the total amount collected for Nexus drop for an event
     /// @param eventId The ID of the event
