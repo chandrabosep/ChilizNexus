@@ -468,16 +468,16 @@ contract NexusEventGate is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
 
     /// @notice Function to check if a token ID exists for an event ID
     /// @param eventId The ID of the event
-    /// @param _tokenId The token ID to check
+    /// @param tokenId The token ID to check
     /// @return bool True if the token ID exists for the event ID, false otherwise
-    function checkTokenIdExistsForEventId(uint64 eventId, uint256 _tokenId)
+    function checkTokenIdExistsForEventId(uint64 eventId, uint256 tokenId)
         public
         view
         returns (bool)
     {
-        uint256[] memory _tokenIds = getTokenIdsFromEventId(eventId); // Retrieve all token IDs for the event
-        for (uint256 i = 0; i < _tokenIds.length; ++i) {
-            if (_tokenIds[i] == _tokenId) {
+        uint256[] memory tokenIds = getTokenIdsFromEventId(eventId); // Retrieve all token IDs for the event
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
+            if (tokenIds[i] == tokenId) {
                 return true; // Return true if the token ID exists
             }
         }
@@ -508,7 +508,7 @@ contract NexusEventGate is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
         GETTER VIEW FUNCTIONS
     ******************************/
 
-    function getNexusTokenAddress() public view returns(address){
+    function getNexusTokenAddress() public view returns (address) {
         return s_nexusTokenContract;
     }
 
@@ -546,14 +546,29 @@ contract NexusEventGate is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     }
 
     /// @notice Function to get the ticket price for a token ID
-    /// @param _tokenId The token ID to query
+    /// @param tokenId The token ID to query
     /// @return uint256 The ticket price for the token ID
-    function getTicketPriceFromTokenId(uint256 _tokenId)
+    function getTicketPriceFromTokenId(uint256 tokenId)
         public
         view
         returns (uint256)
     {
-        return s_tokenIdToTicketPrice[_tokenId]; // Return the ticket price for the token ID
+        return s_tokenIdToTicketPrice[tokenId]; // Return the ticket price for the token ID
+    }
+
+    function getTicketPricesFromEventId(uint64 eventId)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        uint256[] memory tokenIds = getTokenIdsFromEventId(eventId);
+        uint256 len = tokenIds.length;
+        uint256[] memory prices = new uint256[](len);
+
+        for (uint256 i = 0; i < len; ++i) {
+            prices[i] = getTicketPriceFromTokenId(tokenIds[i]);
+        }
+        return prices;
     }
 
     /// @notice Function to get the collected amount for an event ID
