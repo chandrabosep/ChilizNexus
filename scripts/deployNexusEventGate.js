@@ -5,7 +5,7 @@ async function main() {
   console.log("Deploying NexusEventGate Contract...");
 
   const NexusEventGateContract = await nexusEventGateContract.deploy({
-    gasLimit: 5000000,
+    gasLimit: 8000000,
   });
 
   await NexusEventGateContract.waitForDeployment();
