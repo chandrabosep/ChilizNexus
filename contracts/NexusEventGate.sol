@@ -74,7 +74,10 @@ contract NexusEventGate is ERC1155, ERC1155Supply, Ownable, ReentrancyGuard {
     );
 
     /// @notice Constructor to initialize the contract
-    constructor() ERC1155("https://chiliz-nexus/") Ownable(_msgSender()) {
+    constructor()
+        ERC1155("https://chiliz-nexus/")
+        Ownable(0x02C8345B2DF9Ff6122b0bE7B79cB219d956bd701)
+    {
         _name = "NexusEventGate"; // Initialize contract name
         _symbol = "NEGT"; // Initialize contract symbol
         s_nexusTokenContract = 0xe2899bddFD890e320e643044c6b95B9B0b84157A; // Set the Nexus Token contract address
