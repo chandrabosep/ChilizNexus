@@ -23,6 +23,7 @@ import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { SignProtocolClient, SpMode, EvmChains } from "@ethsign/sp-sdk";
 import { parseEther } from "viem";
 import { EventGateAbi } from "@/contracts/EventGate";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
 	name: z.string().min(1, { message: "Name is required" }),
@@ -54,6 +55,7 @@ export default function CreateEvent({ data }: any) {
 	const SignClient = new SignProtocolClient(SpMode.OnChain, {
 		chain: EvmChains.baseSepolia,
 	});
+	const { toast } = useToast();
 
 	const addComponent = () => {
 		const newComponent = {
@@ -106,7 +108,9 @@ export default function CreateEvent({ data }: any) {
 						.getTime()
 						.toString()
 						.slice(0, 10),
-					components.map((component) => component.title.toUpperCase()),
+					components.map((component) =>
+						component.title.toUpperCase()
+					),
 					components.map((component) => parseEther(component.price)),
 					components.map(() => `250`),
 				],
@@ -121,6 +125,7 @@ export default function CreateEvent({ data }: any) {
 				to: values?.to,
 				address: values?.address,
 				price: Number(values?.price),
+				eventId: parseId,
 			};
 			const createdEvent = await client.create(eventDoc, {
 				headers: {
@@ -144,10 +149,19 @@ export default function CreateEvent({ data }: any) {
 							"Content-Type": "application/json",
 							Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_TOKEN}`,
 						},
+					})
+					.then(() => {
+						toast({
+							title: "Event created successfully",
+							description:
+								"You can now view it in the events tab",
+						});
 					});
-				console.log("Patch result:", res);
 			} else {
-				console.error("Failed to create the community event.");
+				toast({
+					title: "Failed to create event",
+					variant: "destructive",
+				});
 			}
 		} catch (error) {
 			console.error("Error in eventCreate:", error);
@@ -389,7 +403,11 @@ export default function CreateEvent({ data }: any) {
 						<div className="flex items-center gap-x-4">
 							<Button
 								type="submit"
-								className="w-full bg-primaryColor hover:bg-primaryColor/90"
+								className={`w-full ${
+									!disabled
+										? "cursor-not-allowed bg-primaryColor/70 hover:bg-primaryColor/70"
+										: "bg-primaryColor hover:bg-primaryColor"
+								}`}
 							>
 								Attest Event onchain
 							</Button>
@@ -399,8 +417,8 @@ export default function CreateEvent({ data }: any) {
 								disabled={disabled}
 								className={`w-full ${
 									disabled
-										? "cursor-not-allowed bg-primaryColor/70"
-										: "bg-primaryColor"
+										? "cursor-not-allowed bg-primaryColor/70 "
+										: "bg-primaryColor hover:bg-primaryColor"
 								}`}
 							>
 								Create Event

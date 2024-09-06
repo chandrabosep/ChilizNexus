@@ -1,6 +1,6 @@
 //@ts-nocheck
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -23,6 +23,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "./ui/select";
+import { EvmChains, SignProtocolClient, SpMode } from "@ethsign/sp-sdk";
+import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { useToast } from "@/hooks/use-toast";
+import { EventGateAbi } from "@/contracts/EventGate";
 
 const formSchema = z.object({
 	name: z.string().min(1, { message: "Name is required" }),
@@ -38,6 +42,18 @@ const formSchema = z.object({
 	type: z.string().min(1, { message: "Type is required" }),
 });
 export default function CreateCommEvent({ data }: any) {
+	const { chains, switchChain } = useSwitchChain<any>();
+	const { address: ConnectedAddress } = useAccount<any>();
+	const fanToken = data?.fanTokenAddress;
+	const { writeContract, isSuccess, error } = useWriteContract();
+	const [parseId, setParseId] = useState<any>();
+	const [values, setValues] = useState();
+	const [disabled, setDisabled] = useState(true);
+	const SignClient = new SignProtocolClient(SpMode.OnChain, {
+		chain: EvmChains.baseSepolia,
+	});
+	const { toast } = useToast();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -52,8 +68,39 @@ export default function CreateCommEvent({ data }: any) {
 			type: "",
 		},
 	});
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+
+	async function createEventAttestation(contractDetails: any) {
 		try {
+			const res = await SignClient.createAttestation({
+				schemaId: "0x1dc",
+				data: contractDetails,
+				indexingValue: ConnectedAddress?.toLowerCase() as `0x${string}`,
+			});
+			console.log(res);
+			return res;
+		} catch (error) {
+			console.error("Error during attestation creation: ", error);
+		}
+	}
+
+	async function eventCreate() {
+		try {
+			writeContract({
+				abi: EventGateAbi.abi,
+				address: EventGateAbi.address as `0x${string}`,
+				functionName: "registerCommunityEvent",
+				args: [
+					parseId,
+					fanToken,
+					ConnectedAddress as `0x${string}`,
+					//@ts-ignore
+					new Date(values?.date || "1729123200")
+						.getTime()
+						.toString()
+						.slice(0, 10),
+					`250`,
+				],
+			});
 			const eventDoc = {
 				_type: "communityEvents",
 				name: values.name,
@@ -65,6 +112,7 @@ export default function CreateCommEvent({ data }: any) {
 				price: Number(values.price),
 				wallet: values.wallet,
 				type: values.type,
+				eventId: parseId,
 			};
 			const createdEvent = await client.create(eventDoc, {
 				headers: {
@@ -88,15 +136,108 @@ export default function CreateCommEvent({ data }: any) {
 							"Content-Type": "application/json",
 							Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_TOKEN}`,
 						},
+					})
+					.then(() => {
+						new promise((resolve) => setTimeout(resolve, 3000));
+						toast({
+							title: "Event created successfully",
+							description:
+								"You can now view it in the events tab",
+						});
 					});
-
-				console.log("Patch result:", res);
 			} else {
-				console.error("Failed to create the community event.");
+				toast({
+					title: "Failed to create event",
+					variant: "destructive",
+				});
 			}
-		} catch (e) {
-			console.log(e);
+		} catch (error) {
+			console.error("Error in eventCreate:", error);
 		}
+	}
+
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		// @ts-ignore
+		setValues(values);
+		try {
+			switchChain({ chainId: 84532 });
+
+			const attestValues = {
+				fanTokenAddress: fanToken,
+				eventName: values.name,
+				eventType: values.type === "offline" ? 2 : 1,
+				eventLocation: values.address.slice(0, 20),
+				eventTimestamp: Math.floor(
+					new Date(values.date).getTime() / 1000
+				),
+				ticketLimit: "250",
+				metadata: values.description,
+			};
+
+			const res = await createEventAttestation(attestValues);
+			console.log("createEventAttestation response:", res);
+
+			if (!res || !res.attestationId) {
+				throw new Error("attestationId not found in response");
+			}
+
+			const { attestationId } = res;
+			// @ts-ignore
+			const id = parseInt(attestationId);
+			console.log("attestationId:", id);
+			setParseId(id?.toString());
+			setDisabled(false);
+
+			await new Promise((resolve) => setTimeout(resolve, 3000));
+			switchChain({ chainId: 88882 });
+		} catch (error) {
+			console.error("Error in onSubmit:", error);
+		}
+
+		// try {
+		// 	const eventDoc = {
+		// 		_type: "communityEvents",
+		// 		name: values.name,
+		// 		description: values.description,
+		// 		date: values.date,
+		// 		from: values.from,
+		// 		to: values.to,
+		// 		address: values.address,
+		// 		price: Number(values.price),
+		// 		wallet: values.wallet,
+		// 		type: values.type,
+		// 	};
+		// 	const createdEvent = await client.create(eventDoc, {
+		// 		headers: {
+		// 			"Content-Type": "application/json",
+		// 			Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_TOKEN}`,
+		// 		},
+		// 	});
+		// 	if (createdEvent._id) {
+		// 		const res = await client
+		// 			.patch(data._id)
+		// 			.setIfMissing({ communityEvents: [] })
+		// 			.insert("after", "communityEvents[-1]", [
+		// 				{
+		// 					_key: uuidv4(),
+		// 					_type: "reference",
+		// 					_ref: createdEvent._id,
+		// 				},
+		// 			])
+		// 			.commit({
+		// 				headers: {
+		// 					"Content-Type": "application/json",
+		// 					Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_TOKEN}`,
+		// 				},
+		// 			});
+
+		// 		console.log("Patch result:", res);
+		// 	} else {
+		// 		console.error("Failed to create the community event.");
+		// 	}
+		// } catch (e) {
+		// 	console.log(e);
+		// }
 	};
 
 	return (
@@ -147,6 +288,16 @@ export default function CreateCommEvent({ data }: any) {
 											type="date"
 											placeholder="Date of event"
 											{...field}
+											min={
+												new Date(
+													new Date().setDate(
+														new Date().getDate() +
+															30
+													)
+												)
+													.toISOString()
+													.split("T")[0]
+											}
 											className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 										/>
 									</FormControl>
@@ -260,12 +411,30 @@ export default function CreateCommEvent({ data }: any) {
 							</FormItem>
 						)}
 					/>
-					<Button
-						type="submit"
-						className="w-full bg-primaryColor hover:bg-primaryColor/90"
-					>
-						Submit
-					</Button>
+					<div className="flex items-center gap-x-4">
+						<Button
+							type="submit"
+							className={`w-full ${
+								!disabled
+									? "cursor-not-allowed bg-primaryColor/70 hover:bg-primaryColor/70"
+									: "bg-primaryColor hover:bg-primaryColor"
+							}`}
+						>
+							Attest Event onchain
+						</Button>
+						<Button
+							type="button"
+							onClick={() => eventCreate()}
+							disabled={disabled}
+							className={`w-full ${
+								disabled
+									? "cursor-not-allowed bg-primaryColor/70 "
+									: "bg-primaryColor hover:bg-primaryColor"
+							}`}
+						>
+							Create Event
+						</Button>
+					</div>
 				</form>
 			</Form>
 		</div>

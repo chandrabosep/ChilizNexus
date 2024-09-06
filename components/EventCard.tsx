@@ -5,15 +5,92 @@ import { CalendarIcon, ClockIcon, MapPinIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { EventGateAbi } from "@/contracts/EventGate";
+import { formatEther, parseEther } from "viem";
+
+const eventGateContract = {
+	address: EventGateAbi.address as `0x${string}`,
+	abi: EventGateAbi.abi,
+} as const;
 
 export default function EventCard({ data }: any) {
 	const [flipped, setFlipped] = useState(false);
+	const [accessLevelsAndPrices, setAccessLevelsAndPrices] = useState<{
+		accessLevel: any;
+		ticketPrice: any;
+		tokenId: any;
+	}>();
 	const handleCardClick = () => {
 		setFlipped(!flipped);
 	};
+	const { address } = useAccount();
+	const { writeContract, error } = useWriteContract();
+	console.log(error);
 
 	const handleFundClick = async (e: React.MouseEvent) => {
 		e.stopPropagation();
+	};
+
+	const { data: getAccessLevel } = useReadContract({
+		...eventGateContract,
+		functionName: "getAccessLevelsFromEventId",
+		args: [data.eventId],
+	});
+
+	const { data: getTokenIds } = useReadContract({
+		...eventGateContract,
+		functionName: "getTokenIdsFromEventId",
+		args: [data.eventId],
+	});
+
+	const { data: getTicketPrice } = useReadContract({
+		...eventGateContract,
+		functionName: "getTicketPricesFromEventId",
+		args: [data.eventId],
+	});
+
+	//@ts-ignore
+	const combinedArray =
+		getAccessLevel &&
+		getTokenIds &&
+		getTicketPrice &&
+		//@ts-ignore
+		getAccessLevel?.map((level: any, index: number) => ({
+			accessLevel: level,
+			//@ts-ignore
+			tokenId: getTokenIds && getTokenIds[index],
+			//@ts-ignore
+			ticketPrice: formatEther(getTicketPrice && getTicketPrice[index]),
+		}));
+
+	const selectTokenId = async (
+		e: React.MouseEvent,
+		accessLevel: any,
+		ticketPrice: any,
+		tokenId: any,
+	) => {
+		e.stopPropagation();
+		setAccessLevelsAndPrices({
+			accessLevel: accessLevel,
+			ticketPrice: ticketPrice,
+			tokenId: tokenId,
+		});
+	};
+	const handleBuyTicket = async (e: React.MouseEvent) => {
+		e.stopPropagation();
+		console.log(data.eventId, accessLevelsAndPrices?.tokenId, address);
+		writeContract({
+			abi: EventGateAbi.abi,
+			address: EventGateAbi.address as `0x${string}`,
+			functionName: "mintLiveTicket",
+			args: [
+				data?.eventId,
+				accessLevelsAndPrices?.tokenId,
+				address,
+			],
+			value: parseEther(accessLevelsAndPrices?.ticketPrice),
+		});
 	};
 	return (
 		<>
@@ -68,22 +145,45 @@ export default function EventCard({ data }: any) {
 								<p className="text-xl font-medium">
 									Total Fans Registered:
 								</p>
-								<span className="text-xl font-bold">24</span>
+								<span className="text-xl font-bold">0</span>
 							</div>
 							<div className="h-full flex flex-col gap-y-2 pt-4">
 								<h6 className="text-lg font-semibold text-primaryColor underline decoration-wavy decoration-secondaryColor">
 									Tickets
 								</h6>
-								<div className="grid grid-cols-2 gap-2 gap-y-4 pt-3">
-									<div className="flex flex-col items-center gap-y-1">
-										<h6 className="text-lg font-semibold">
-											VIP
-										</h6>
-										<p className="text-xl font-bold">
-											$100
-										</p>
+								<div className="pt-3">
+									<div className={`grid grid-cols-3 ite`}>
+										{combinedArray &&
+											combinedArray?.map(
+												({
+													accessLevel,
+													ticketPrice,
+													tokenId,
+												}: any) => (
+													<div
+														key={accessLevel}
+														className={`text-center py-2 rounded-md ${
+															accessLevelsAndPrices?.accessLevel === accessLevel ? "bg-primaryColor/30" : "" 
+														}`}
+														onClick={(e) => {
+															selectTokenId(
+																e,
+																accessLevel,
+																ticketPrice,
+																tokenId
+															);
+														}}
+													>
+														<h6 className="text-base font-semibold mx-auto">
+															{accessLevel}
+														</h6>
+														<p className="text-lg font-bold mx-auto">
+															{ticketPrice}
+														</p>
+													</div>
+												)
+											)}
 									</div>
-									
 								</div>
 							</div>
 							<div className="flex items-center gap-x-2 py-2">
@@ -95,12 +195,14 @@ export default function EventCard({ data }: any) {
 									Fund
 								</Button>
 							</div>
-							
 						</div>
 					)}
-					<Button className="flex items-end mt-auto w-full bg-primaryColor hover:bg-primaryColor h-fit">
-								Register Now
-							</Button>
+					<Button
+						onClick={(e) => handleBuyTicket(e)}
+						className="flex items-end mt-auto w-full bg-primaryColor hover:bg-primaryColor h-fit"
+					>
+						Register Now
+					</Button>
 				</div>
 			</Card>
 		</>

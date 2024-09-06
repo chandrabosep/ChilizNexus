@@ -6,6 +6,7 @@ import { cookieToInitialState } from "wagmi";
 import { config } from "@/config";
 import { headers } from "next/headers";
 import Header from "@/components/Header";
+import { Toaster } from "@/components/ui/toaster";
 
 const ppmori = localfont({
 	src: [
@@ -35,6 +36,7 @@ export default function RootLayout({
 				<Web3ModalProvider initialState={initialState}>
 					<Header />
 					<div>{children}</div>
+					<Toaster />
 				</Web3ModalProvider>
 			</body>
 		</html>
