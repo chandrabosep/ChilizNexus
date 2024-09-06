@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client";
 
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,10 @@ import { client } from "@/lib/sanity";
 import { v4 as uuidv4 } from "uuid";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
+import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { SignProtocolClient, SpMode, EvmChains } from "@ethsign/sp-sdk";
+import { parseEther } from "viem";
+import { EventGateAbi } from "@/contracts/EventGate";
 
 const formSchema = z.object({
 	name: z.string().min(1, { message: "Name is required" }),
@@ -31,7 +36,10 @@ const formSchema = z.object({
 	price: z.number(),
 });
 
-export default function CreateEvent(data: any) {
+export default function CreateEvent({ data }: any) {
+	const { chains, switchChain } = useSwitchChain<any>();
+	const { address: ConnectedAddress } = useAccount<any>();
+	const fanToken = data?.fanTokenAddress;
 	const [components, setComponents] = useState([
 		{
 			id: 1,
@@ -39,6 +47,14 @@ export default function CreateEvent(data: any) {
 			price: "1",
 		},
 	]);
+	const { writeContract, isSuccess, error } = useWriteContract();
+	const [parseId, setParseId] = useState<any>();
+	const [values, setValues] = useState();
+	const [disabled, setDisabled] = useState(true);
+	const SignClient = new SignProtocolClient(SpMode.OnChain, {
+		chain: EvmChains.baseSepolia,
+	});
+
 	const addComponent = () => {
 		const newComponent = {
 			id: components.length + 1,
@@ -60,18 +76,51 @@ export default function CreateEvent(data: any) {
 			price: 0,
 		},
 	});
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log(components);
+
+	async function createEventAttestation(contractDetails: any) {
 		try {
+			const res = await SignClient.createAttestation({
+				schemaId: "0x1dc",
+				data: contractDetails,
+				indexingValue: ConnectedAddress?.toLowerCase() as `0x${string}`,
+			});
+			console.log(res);
+			return res;
+		} catch (error) {
+			console.error("Error during attestation creation: ", error);
+		}
+	}
+
+	async function eventCreate() {
+		try {
+			writeContract({
+				abi: EventGateAbi.abi,
+				address: EventGateAbi.address as `0x${string}`,
+				functionName: "registerLiveEvent",
+				args: [
+					parseId,
+					fanToken,
+					ConnectedAddress as `0x${string}`,
+					//@ts-ignore
+					new Date(values?.date || "1729123200")
+						.getTime()
+						.toString()
+						.slice(0, 10),
+					components.map((component) => component.title.toUpperCase()),
+					components.map((component) => parseEther(component.price)),
+					components.map(() => `250`),
+				],
+			});
+
 			const eventDoc = {
 				_type: "events",
-				name: values.name,
-				description: values.description,
-				date: values.date,
-				from: values.from,
-				to: values.to,
-				address: values.address,
-				price: Number(values.price),
+				name: values?.name,
+				description: values?.description,
+				date: values?.date,
+				from: values?.from,
+				to: values?.to,
+				address: values?.address,
+				price: Number(values?.price),
 			};
 			const createdEvent = await client.create(eventDoc, {
 				headers: {
@@ -96,13 +145,51 @@ export default function CreateEvent(data: any) {
 							Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_TOKEN}`,
 						},
 					});
-
 				console.log("Patch result:", res);
 			} else {
 				console.error("Failed to create the community event.");
 			}
-		} catch (e) {
-			console.log(e);
+		} catch (error) {
+			console.error("Error in eventCreate:", error);
+		}
+	}
+
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		// @ts-ignore
+		setValues(values);
+		try {
+			switchChain({ chainId: 84532 });
+
+			const attestValues = {
+				fanTokenAddress: fanToken,
+				eventName: values.name,
+				eventType: 0,
+				eventLocation: values.address.slice(0, 20),
+				eventTimestamp: Math.floor(
+					new Date(values.date).getTime() / 1000
+				),
+				ticketLimit: "250",
+				metadata: values.description,
+			};
+
+			const res = await createEventAttestation(attestValues);
+			console.log("createEventAttestation response:", res);
+
+			if (!res || !res.attestationId) {
+				throw new Error("attestationId not found in response");
+			}
+
+			const { attestationId } = res;
+			// @ts-ignore
+			const id = parseInt(attestationId);
+			console.log("attestationId:", id);
+			setParseId(id?.toString());
+			setDisabled(false);
+
+			await new Promise((resolve) => setTimeout(resolve, 3000));
+			switchChain({ chainId: 88882 });
+		} catch (error) {
+			console.error("Error in onSubmit:", error);
 		}
 	};
 	return (
@@ -185,7 +272,7 @@ export default function CreateEvent(data: any) {
 														new Date(
 															new Date().setDate(
 																new Date().getDate() +
-																	7
+																	30
 															)
 														)
 															.toISOString()
@@ -232,31 +319,6 @@ export default function CreateEvent(data: any) {
 										)}
 									/>
 								</div>
-
-								{/* <FormField
-									control={form.control}
-									name="price"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Price</FormLabel>
-											<FormControl>
-												<Input
-													type="number"
-													placeholder="Price"
-													{...field}
-													onChange={(e) =>
-														field.onChange(
-															Number(
-																e.target.value
-															)
-														)
-													}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/> */}
 								<div className="w-full flex flex-col gap-y-4">
 									<h4 className="text-lg font-medium">
 										Tickets
@@ -318,22 +380,32 @@ export default function CreateEvent(data: any) {
 												onClick={addComponent}
 											>
 												<PlusIcon className="w-5 h-5" />
-												<span className="sr-only">
-													Add component
-												</span>
 											</Button>
 										</div>
 									))}
 								</div>
 							</div>
 						</div>
-
-						<Button
-							type="submit"
-							className="w-full bg-primaryColor hover:bg-primaryColor/90"
-						>
-							Submit
-						</Button>
+						<div className="flex items-center gap-x-4">
+							<Button
+								type="submit"
+								className="w-full bg-primaryColor hover:bg-primaryColor/90"
+							>
+								Attest Event onchain
+							</Button>
+							<Button
+								type="button"
+								onClick={() => eventCreate()}
+								disabled={disabled}
+								className={`w-full ${
+									disabled
+										? "cursor-not-allowed bg-primaryColor/70"
+										: "bg-primaryColor"
+								}`}
+							>
+								Create Event
+							</Button>
+						</div>
 					</form>
 				</Form>
 			</div>
