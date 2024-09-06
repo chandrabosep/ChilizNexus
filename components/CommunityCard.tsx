@@ -5,15 +5,46 @@ import { CalendarIcon, ClockIcon, MapPinIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { EventGateAbi } from "@/contracts/EventGate";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CommunityCard({ data, type }: any) {
 	const [flipped, setFlipped] = useState(false);
+	const { writeContract } = useWriteContract();
+	const { address } = useAccount();
+	const { toast } = useToast();
+
 	const handleCardClick = () => {
 		setFlipped(!flipped);
 	};
 
 	const handleFundClick = async (e: React.MouseEvent) => {
 		e.stopPropagation();
+	};
+
+	const { data: tokenId, error } = useReadContract({
+		abi: EventGateAbi.abi,
+		address: EventGateAbi.address as `0x${string}`,
+		functionName: "getTokenIdOfAnEventManager",
+		args: [data?.eventId],
+	});
+	console.log(tokenId, error);
+
+	const register = async (e: React.MouseEvent) => {
+		e.stopPropagation();
+		await writeContract({
+			abi: EventGateAbi.abi,
+			address: EventGateAbi.address as `0x${string}`,
+			functionName: "mintCommunityTicket",
+			args: [data?.eventId, tokenId, address],
+		}).then(() => {
+			new Promise((resolve) => setTimeout(resolve, 3000));
+			toast({
+				title: "Registered Successfully",
+				description: "You have successfully registered for the event.",
+			});
+		});
 	};
 	return (
 		<>
@@ -91,7 +122,10 @@ export default function CommunityCard({ data, type }: any) {
 							<div></div>
 						</div>
 					)}
-					<Button className="flex items-end w-full bg-primaryColor hover:bg-primaryColor h-fit">
+					<Button
+						onClick={(e) => register(e)}
+						className="flex items-end w-full bg-primaryColor hover:bg-primaryColor h-fit"
+					>
 						Register Now
 					</Button>
 				</div>

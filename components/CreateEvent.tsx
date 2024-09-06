@@ -151,6 +151,7 @@ export default function CreateEvent({ data }: any) {
 						},
 					})
 					.then(() => {
+						new Promise((resolve) => setTimeout(resolve, 3000));
 						toast({
 							title: "Event created successfully",
 							description:

@@ -26,7 +26,6 @@ export default function EventCard({ data }: any) {
 	};
 	const { address } = useAccount();
 	const { writeContract, error } = useWriteContract();
-	console.log(error);
 
 	const handleFundClick = async (e: React.MouseEvent) => {
 		e.stopPropagation();
@@ -79,7 +78,6 @@ export default function EventCard({ data }: any) {
 	};
 	const handleBuyTicket = async (e: React.MouseEvent) => {
 		e.stopPropagation();
-		console.log(data.eventId, accessLevelsAndPrices?.tokenId, address);
 		writeContract({
 			abi: EventGateAbi.abi,
 			address: EventGateAbi.address as `0x${string}`,

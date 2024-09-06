@@ -109,8 +109,8 @@ export default function CreateCommEvent({ data }: any) {
 				from: values.from,
 				to: values.to,
 				address: values.address,
-				price: Number(values.price),
-				wallet: values.wallet,
+				price: 1,
+				wallet: ConnectedAddress,
 				type: values.type,
 				eventId: parseId,
 			};
@@ -193,51 +193,6 @@ export default function CreateCommEvent({ data }: any) {
 		} catch (error) {
 			console.error("Error in onSubmit:", error);
 		}
-
-		// try {
-		// 	const eventDoc = {
-		// 		_type: "communityEvents",
-		// 		name: values.name,
-		// 		description: values.description,
-		// 		date: values.date,
-		// 		from: values.from,
-		// 		to: values.to,
-		// 		address: values.address,
-		// 		price: Number(values.price),
-		// 		wallet: values.wallet,
-		// 		type: values.type,
-		// 	};
-		// 	const createdEvent = await client.create(eventDoc, {
-		// 		headers: {
-		// 			"Content-Type": "application/json",
-		// 			Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_TOKEN}`,
-		// 		},
-		// 	});
-		// 	if (createdEvent._id) {
-		// 		const res = await client
-		// 			.patch(data._id)
-		// 			.setIfMissing({ communityEvents: [] })
-		// 			.insert("after", "communityEvents[-1]", [
-		// 				{
-		// 					_key: uuidv4(),
-		// 					_type: "reference",
-		// 					_ref: createdEvent._id,
-		// 				},
-		// 			])
-		// 			.commit({
-		// 				headers: {
-		// 					"Content-Type": "application/json",
-		// 					Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_TOKEN}`,
-		// 				},
-		// 			});
-
-		// 		console.log("Patch result:", res);
-		// 	} else {
-		// 		console.error("Failed to create the community event.");
-		// 	}
-		// } catch (e) {
-		// 	console.log(e);
-		// }
 	};
 
 	return (
@@ -375,7 +330,7 @@ export default function CreateCommEvent({ data }: any) {
 							</FormItem>
 						)}
 					/>
-					<FormField
+					{/* <FormField
 						control={form.control}
 						name="price"
 						render={({ field }) => (
@@ -410,7 +365,7 @@ export default function CreateCommEvent({ data }: any) {
 								<FormMessage />
 							</FormItem>
 						)}
-					/>
+					/> */}
 					<div className="flex items-center gap-x-4">
 						<Button
 							type="submit"
