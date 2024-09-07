@@ -148,38 +148,35 @@ export default function Bridge() {
 				</div>
 
 				<div className="w-full flex flex-col gap-y-8">
-					<h2 className="text-3xl text-secondaryColor font-semibold mx-auto">
-						Get FAN Tokens for testing
-					</h2>
-					<div className="flex flex-col gap-y-4 items-center">
-						{[
-							{
-								title: "BAR",
-								link: "https://testnet.chiliscan.com/address/0xE2E39B1A5eFe07743F9E0E8408F1B7aAB6B7f832/contract/88882/writeContract",
-							},
-							{
-								title: "JUV",
-								link: "https://testnet.chiliscan.com/address/0xA4e42B23B86DF349c91a5F87701C4c575b58DBD5/contract/88882/writeContract",
-							},
-							{
-								title: "PSG",
-								link: "https://testnet.chiliscan.com/address/0x5E36A22751f56aECE9A970beac728De684E7Bd1E/contract/88882/writeContract",
-							},
-						].map(({ title, link }) => (
-							<div
-								key={title}
-								className="flex items-center gap-x-6"
-							>
-								<h4 className="text-xl font-semibold">
-									{title}:
-								</h4>
-								<Link href={link} target="_blank" className="underline text-lg">
-									{link}
-								</Link>
-							</div>
-						))}
-					</div>
+				<h2 className="text-3xl text-secondaryColor font-semibold mx-auto">
+					Get FAN Tokens for testing
+				</h2>
+				<div className="flex gap-4 items-center justify-center w-full">
+					{[
+						{
+							title: "BAR",
+							link: "https://testnet.chiliscan.com/address/0xE2E39B1A5eFe07743F9E0E8408F1B7aAB6B7f832/contract/88882/writeContract",
+						},
+						{
+							title: "JUV",
+							link: "https://testnet.chiliscan.com/address/0xA4e42B23B86DF349c91a5F87701C4c575b58DBD5/contract/88882/writeContract",
+						},
+						{
+							title: "PSG",
+							link: "https://testnet.chiliscan.com/address/0x5E36A22751f56aECE9A970beac728De684E7Bd1E/contract/88882/writeContract",
+						},
+					].map(({ title, link }) => (
+						<Link
+							key={title}
+							href={link}
+							target="_blank"
+							className="text-lg p-2 bg-primaryColor text-white px-8 rounded-lg flex"
+						>
+							{title}
+						</Link>
+					))}
 				</div>
+			</div>
 				<div className="space-y-2 text-center">
 					<h3 className="text-lg font-medium">
 						Supported fan Tokens
