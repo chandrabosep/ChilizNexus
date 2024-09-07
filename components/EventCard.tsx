@@ -192,9 +192,17 @@ export default function EventCard({ data }: any) {
 										Fans Registered:
 									</p>
 									<span className="text-lg font-bold">
-										{formatEther(
-											getCollectedAmt && getCollectedAmt
-										) / (2.5).toFixed()}
+										{(
+											parseFloat(
+												formatEther(
+													getCollectedAmt &&
+														typeof getCollectedAmt ===
+															"bigint"
+														? getCollectedAmt
+														: BigInt(0) // Ensure it's a bigint
+												)
+											) / 2.5
+										).toFixed(2)}
 									</span>
 								</div>
 								<div className="flex flex-col items-center gap-4">
@@ -203,7 +211,14 @@ export default function EventCard({ data }: any) {
 									</p>
 									<span className="text-lg font-bold">
 										{formatEther(
-											getCollectedAmt && getCollectedAmt
+											typeof getCollectedAmt === "bigint"
+												? getCollectedAmt
+												: typeof getCollectedAmt ===
+														"number" ||
+												  typeof getCollectedAmt ===
+														"string"
+												? BigInt(getCollectedAmt)
+												: BigInt(0) // Fallback to BigInt(0) if it's not a valid number or string
 										)}{" "}
 										<span className="text-sm font-semibold">
 											CHZ
