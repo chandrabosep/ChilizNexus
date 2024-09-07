@@ -4,27 +4,15 @@ import React, { useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { LucideLink, SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { urlFor } from "@/lib/sanity";
-import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
 export default function ClubCard({ data }: any) {
-	const router = useRouter();
-
 	const [flipped, setFlipped] = useState(false);
 	console.log();
 
 	const handleCardClick = () => {
 		setFlipped(!flipped);
-	};
-
-	const handleInputClick = (e: React.MouseEvent) => {
-		e.stopPropagation();
-	};
-
-	const handleFundClick = async (e: React.MouseEvent) => {
-		e.stopPropagation();
 	};
 
 	return (
@@ -108,6 +96,13 @@ export default function ClubCard({ data }: any) {
 								)}
 							</div>
 						</div>
+						<Link
+							target="_blank"
+							href={`https://testnet.chiliscan.com/address/${data.fanTokenAddress}/contract/88882/writeContract#F5`}
+							className="w-full bg-primaryColor text-white p-1 rounded-lg mt-3"
+						>
+							<Button className="w-full bg-transparent hover:bg-transparent text-white">Mint Token</Button>
+						</Link>
 						{/* <div className="flex items-center gap-x-2 pt-5">
 							<Input
 								placeholder="Fund"

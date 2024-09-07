@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useAccount } from "wagmi";
 import Image from "next/image";
 
-const links = ["clubs", "events", "bridge", "fun"];
+const links = ["clubs", "events","vault" , "bridge", "fun"];
 
 export default function Header() {
 	const { isConnected } = useAccount();
@@ -34,7 +34,7 @@ export default function Header() {
 								href={`/${link.toLowerCase()}`}
 								className="capitalize"
 							>
-								{link}
+								{link === "vault" ? "Fan vault" : link}
 							</Link>
 						))}
 					</>
