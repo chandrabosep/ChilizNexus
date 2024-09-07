@@ -89,8 +89,9 @@ export default function Bridge() {
 					{`Bridge any fan tokens(CAP20) to Nexus tokens(CAP223)`}
 				</h2>
 				<p className="text-muted-foreground font-medium text-sm">
-					CAP223 tokens are interoperable mint from supported fan
-					tokens and in future it is pegged to 1$ using chiliz
+					Nexus tokens are interoperable utility token for secure
+					transfer and in future it is pegged to 1$ using chiliz &
+					basket of fan tokens
 				</p>
 			</div>
 			<Balance />
@@ -98,7 +99,9 @@ export default function Bridge() {
 				<div className="flex items-center gap-8 mx-auto">
 					<div className="flex items-center mt-auto gap-x-2">
 						<div className="flex flex-col gap-y-2">
-							<Label htmlFor="from" className="font-medium">FAN TOKEN</Label>
+							<Label htmlFor="from" className="font-medium">
+								FAN TOKEN
+							</Label>
 							<Input
 								id="from"
 								placeholder="0.0"
@@ -124,7 +127,9 @@ export default function Bridge() {
 						<ArrowLeftRightIcon className="h-6 w-6 text-muted-foreground" />
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="to" className="font-medium">NEXUS TOKEN</Label>
+						<Label htmlFor="to" className="font-medium">
+							NEXUS TOKEN
+						</Label>
 						<Input
 							id="to"
 							value={`${fromAmount} NEXUS TOKEN`}
@@ -148,40 +153,42 @@ export default function Bridge() {
 				</div>
 
 				<div className="w-full flex flex-col gap-y-8">
-				<h2 className="text-3xl text-secondaryColor font-semibold mx-auto">
-					Get FAN Tokens for testing
-				</h2>
-				<div className="flex gap-4 items-center justify-center w-full">
-					{[
-						{
-							title: "BAR",
-							link: "https://testnet.chiliscan.com/address/0xE2E39B1A5eFe07743F9E0E8408F1B7aAB6B7f832/contract/88882/writeContract",
-						},
-						{
-							title: "JUV",
-							link: "https://testnet.chiliscan.com/address/0xA4e42B23B86DF349c91a5F87701C4c575b58DBD5/contract/88882/writeContract",
-						},
-						{
-							title: "PSG",
-							link: "https://testnet.chiliscan.com/address/0x5E36A22751f56aECE9A970beac728De684E7Bd1E/contract/88882/writeContract",
-						},
-					].map(({ title, link }) => (
-						<Link
-							key={title}
-							href={link}
-							target="_blank"
-							className="text-lg p-2 bg-primaryColor text-white px-8 rounded-lg flex"
-						>
-							{title}
-						</Link>
-					))}
+					<h2 className="text-3xl text-secondaryColor font-semibold mx-auto">
+						Get FAN Tokens for testing
+					</h2>
+					<div className="flex gap-4 items-center justify-center w-full">
+						{[
+							{
+								title: "BAR",
+								link: "https://testnet.chiliscan.com/address/0xE2E39B1A5eFe07743F9E0E8408F1B7aAB6B7f832/contract/88882/writeContract",
+							},
+							{
+								title: "JUV",
+								link: "https://testnet.chiliscan.com/address/0xA4e42B23B86DF349c91a5F87701C4c575b58DBD5/contract/88882/writeContract",
+							},
+							{
+								title: "PSG",
+								link: "https://testnet.chiliscan.com/address/0x5E36A22751f56aECE9A970beac728De684E7Bd1E/contract/88882/writeContract",
+							},
+						].map(({ title, link }) => (
+							<Link
+								key={title}
+								href={link}
+								target="_blank"
+								className="text-lg p-2 bg-primaryColor text-white px-8 rounded-lg flex"
+							>
+								{title}
+							</Link>
+						))}
+					</div>
 				</div>
-			</div>
 				<div className="space-y-2 text-center">
 					<h3 className="text-lg font-medium">
 						Supported fan Tokens
 					</h3>
-					<p className="text-muted-foreground font-medium">BAR, PSG, JUV</p>
+					<p className="text-muted-foreground font-medium">
+						BAR, PSG, JUV
+					</p>
 				</div>
 			</div>
 

@@ -43,9 +43,8 @@ export default function Home() {
 						</h1>
 					</div>
 					<p className={`text-2xl max-w-screen-sm`}>
-						Elevate your sports experience with ChilizNexus. Engage,
-						interact, and govern—all in one blockchain-powered
-						platform.
+						Interoperable platform for global fan engagement and uniting sports fans from around the
+						world.
 					</p>
 					<Link href="/clubs">
 						<Button className="px-10 py-6 bg-primaryColor hover:bg-primaryColor/80 text-white text-lg rounded-full">
@@ -66,7 +65,7 @@ export default function Home() {
 					How it Works
 				</h2>
 				<section className="w-full py-8 md:py-10 lg:py-16">
-					<div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-20">
+					<div className="grid gap-6 lg:grid-cols-2 lg:gap-20">
 						<div className="space-y-4 max-w-2xl">
 							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
 								Engage in Events
@@ -75,9 +74,13 @@ export default function Home() {
 								Participate in Exciting Fan Activities
 							</h2>
 							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-								Join live, virtual, or community events hosted
-								by your favorite teams and connect with other
-								passionate fans.
+								Participate in live events hosted by your
+								favorite teams, join purely{" "}
+								<span className="text-white bg-primaryColor/70 p-1 px-2 rounded-full">
+									onchain
+								</span>{" "}
+								virtual or community events organized by fans,
+								and connect with other passionate supporters.
 							</p>
 							<div className="grid gap-2">
 								<div className="flex items-center gap-2">
@@ -89,49 +92,26 @@ export default function Home() {
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Participate in global virtual events
+										Participate in community & virtual
+										events
 									</p>
 								</div>
 							</div>
 						</div>
-						<div className="space-y-4 max-w-2xl">
-							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
-								Get Notified
-							</div>
-							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-								Stay Connected with Your Club
-							</h2>
-							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-								Opt into notifications to receive real-time
-								updates about events, team news, and exclusive
-								content directly from your favorite clubs.
-							</p>
-							<div className="grid gap-2">
-								<div className="flex items-center gap-2">
-									<CheckIcon className="h-5 w-5 text-green-500" />
-									<p className="text-sm text-muted-foreground">
-										Subscribe to club alerts
-									</p>
-								</div>
-								<div className="flex items-center gap-2">
-									<CheckIcon className="h-5 w-5 text-green-500" />
-									<p className="text-sm text-muted-foreground">
-										Never miss important updates
-									</p>
-								</div>
-							</div>
-						</div>
+
 						<div className="space-y-4 max-w-2xl">
 							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
 								Earn and Use Tokens
 							</div>
 							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-								Unlock Rewards and Influence
+								NexusToken & Rewards
 							</h2>
 							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-								{`Participate in events to earn NexusTokens, which
-								can be used to vote on club decisions, giving
-								you a voice in your team's future.`}
+								{`Bridge Fan Tokens to receive Nexus Tokens `}{" "}
+								<span className="text-white bg-primaryColor/70 p-1 px-2 rounded-full">
+									CAP223
+								</span>{" "}
+								{`, or earn Nexus Tokens by participating in events, staking through the FAN Vault, or submitting proposals as rewards.`}
 							</p>
 							<div className="grid gap-2">
 								<div className="flex items-center gap-2">
@@ -143,7 +123,7 @@ export default function Home() {
 								<div className="flex items-center gap-2">
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
-										Influence club decisions
+										Get Interactive Rewards
 									</p>
 								</div>
 							</div>
@@ -153,12 +133,15 @@ export default function Home() {
 								Showcase Your Participation
 							</div>
 							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
-								Secure Your Memories
+								Secure Your Memories (SBTs)
 							</h2>
 							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-								Receive non-transferable Soulbound Tokens (SBTs)
-								as proof of your participation in events, making
-								each experience unique and personal.
+								Receive non-transferable Soulbound Tokens{" "}
+								<span className="text-white bg-primaryColor/70 p-1 px-2 rounded-full">
+									ERC1155
+								</span>{" "}
+								as proof of your participation in events, and
+								share your ticket on socials.
 							</p>
 							<div className="grid gap-2">
 								<div className="flex items-center gap-2">
@@ -171,6 +154,39 @@ export default function Home() {
 									<CheckIcon className="h-5 w-5 text-green-500" />
 									<p className="text-sm text-muted-foreground">
 										Share your event memories online
+									</p>
+								</div>
+							</div>
+						</div>
+						<div className="space-y-4 max-w-2xl">
+							<div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">
+								Transparent Tracking
+							</div>
+							<h2 className="text-3xl font-bold tracking-tighter sm:text-3xl md:text-4xl">
+								Secure Event Participation via Attestation
+							</h2>
+							<p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+								Implement an on-chain{" "}
+								<span className="text-white bg-primaryColor/70 p-1 px-2.5 rounded-full">
+									sign protocol
+								</span>{" "}
+								for attestations, enabling secure, transparent,
+								and decentralized tracking of events, while also
+								facilitating the creation of an event
+								marketplace.
+							</p>
+							<div className="grid gap-2">
+								<div className="flex items-center gap-2">
+									<CheckIcon className="h-5 w-5 text-green-500" />
+									<p className="text-sm text-muted-foreground">
+										Verify event with on-chain attestations
+									</p>
+								</div>
+								<div className="flex items-center gap-2">
+									<CheckIcon className="h-5 w-5 text-green-500" />
+									<p className="text-sm text-muted-foreground">
+										Ensure transparency and security for
+										every event
 									</p>
 								</div>
 							</div>
@@ -189,38 +205,38 @@ export default function Home() {
 						{
 							title: "Event Creation & Management",
 							description:
-								"ChilizNexus enables fans to participate in live, virtual, and community events, enhancing engagement with their favorite teams.",
+								"ChilizNexus enables fans to participate in live, virtual, and community events, enhancing fan engagement with their favorite teams.",
 							icon: <Gem />,
 						},
 						{
-							title: "Subscriptions & Notifications",
+							title: "Tokenized Rewards",
 							description:
-								"Stay updated with real-time club news and event announcements through the platform’s subscription and notification system.",
-							icon: <ScrollText />,
-						},
-						{
-							title: "Tokenized Rewards & Governance",
-							description:
-								"Earn NexusTokens by participating in events and use them to vote on club decisions, fostering community and ownership.",
+								"Bridge Fan Tokens to receive Nexus Tokens, or earn them by participating in events, staking in the FAN Vault, or submitting proposals.",
 							icon: <Users />,
 						},
 						{
 							title: "Secure Ticketing",
 							description:
-								"ChilizNexus issues non-transferable Soulbound Tokens (SBTs) as proof of participation, creating a personal and memorable fan experience.",
+								" Non-transferable Soulbound Tokens (SBTs) serve as event tickets, preserving each fan's unique experience as a permanent on-chain memory.",
 							icon: <Vault />,
 						},
 						{
 							title: "On-Chain Attestations",
 							description:
-								"All events and interactions are recorded on-chain, providing transparent and immutable verification of fan participation.",
+								"All events are recorded as on-chain attestations via the Sign protocol, with fan interactions enabled by Chiliz, ensuring transparency and verifiable participation.",
 							icon: <LinkIcon />,
 						},
 						{
 							title: "TokenDrops & Incentives",
 							description:
-								"Fans holding event tickets are eligible for token drops, adding extra rewards for active participation in the ChilizNexus ecosystem.",
+								"Fans holding event tickets are eligible for TokenDrops on both Chiliz and Base, receiving additional rewards for their active engagement in the ChilizNexus ecosystem.",
 							icon: <Gift />,
+						},
+						{
+							title: "Subscriptions & Notifications",
+							description:
+								"Stay informed with real-time updates on club activities, events, and exclusive content, enhancing fan interaction through a robust subscription system.",
+							icon: <ScrollText />,
 						},
 
 						// {

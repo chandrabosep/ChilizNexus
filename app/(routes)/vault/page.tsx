@@ -27,8 +27,8 @@ export default function Vault() {
 					{`Deposit Fan Token (CAP20) and Get Rewarded in Nexus Token (CAP223)`}
 				</h2>
 				<p className="text-muted-foreground font-medium text-sm">
-					CAP223 tokens are interoperable mint from supported fan
-					tokens and in future it is pegged to 1$ using chiliz
+					Nexus tokens are interoperable utility token for secure transfer
+					and in future it is pegged to 1$ using chiliz & basket of fan tokens.
 				</p>
 			</div>
 			<Balance />
