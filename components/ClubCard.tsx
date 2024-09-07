@@ -108,7 +108,7 @@ export default function ClubCard({ data }: any) {
 								)}
 							</div>
 						</div>
-						<div className="flex items-center gap-x-2 pt-5">
+						{/* <div className="flex items-center gap-x-2 pt-5">
 							<Input
 								placeholder="Fund"
 								onClick={handleFundClick}
@@ -116,7 +116,7 @@ export default function ClubCard({ data }: any) {
 							<Button onClick={handleFundClick} className="">
 								Fund
 							</Button>
-						</div>
+						</div> */}
 					</div>
 				)}
 			</CardContent>

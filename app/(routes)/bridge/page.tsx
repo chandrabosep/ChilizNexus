@@ -81,7 +81,7 @@ export default function Bridge() {
 	};
 
 	return (
-		<div className="flex flex-col py-20 gap-y-16 w-full h-full max-w-screen-2xl">
+		<div className="flex flex-col pt-20 gap-y-16 w-full h-full max-w-screen-2xl">
 			<div className="flex flex-col gap-y-2 items-center justify-between">
 				<h2
 					className={`text-3xl text-secondaryColor font-semibold mx-auto`}
@@ -173,7 +173,7 @@ export default function Bridge() {
 								<h4 className="text-xl font-semibold">
 									{title}:
 								</h4>
-								<Link href={link} className="underline text-lg">
+								<Link href={link} target="_blank" className="underline text-lg">
 									{link}
 								</Link>
 							</div>

@@ -10,6 +10,7 @@ import CreateUpdate from "./CreateUpdate";
 import CreateEvent from "./CreateEvent";
 
 export default function Admin({ data }: any) {
+	console.log(data.events);
 	return (
 		<div className="flex flex-col gap-y-6 py-4">
 			<div className="grid md:grid-cols-2 gap-x-10">
@@ -30,13 +31,13 @@ export default function Admin({ data }: any) {
 								<TableHead>From</TableHead>
 								<TableHead>To</TableHead>
 								<TableHead>Address</TableHead>
-								<TableHead className="text-right">
+								{/* <TableHead className="text-right">
 									Price
-								</TableHead>
+								</TableHead> */}
 								{/* <TableHead>Description</TableHead> */}
 							</TableRow>
 						</TableHeader>
-						{data.events ? (
+						{!data.events ? (
 							<p className="py-6 flex items-center justify-center h-fit text-black">
 								No events found
 							</p>
@@ -61,9 +62,9 @@ export default function Admin({ data }: any) {
 												<TableCell>
 													{event.address}
 												</TableCell>
-												<TableCell className="text-right">
+												{/* <TableCell className="text-right">
 													${event.price.toFixed(2)}
-												</TableCell>
+												</TableCell> */}
 												{/* <TableCell>{event.description}</TableCell> */}
 											</TableRow>
 										)

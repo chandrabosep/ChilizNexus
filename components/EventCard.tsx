@@ -35,14 +35,28 @@ export default function EventCard({ data }: any) {
 		ticketPrice: any;
 		tokenId: any;
 	}>();
+	const [fundAmt, setFundAmt] = useState(0);
 	const handleCardClick = () => {
 		setFlipped(!flipped);
 	};
 	const { address } = useAccount();
+	const { writeContract: writeContractMint, isSuccess: mintSuccess } =
+		useWriteContract();
 	const { writeContract, isSuccess } = useWriteContract();
 
 	const handleFundClick = async (e: React.MouseEvent) => {
 		e.stopPropagation();
+		writeContract({
+			...eventGateContract,
+			functionName: "nexusDrop",
+			args: [data.eventId],
+			value: parseEther(fundAmt.toString()),
+		});
+	};
+
+	const handelInput = (e: any) => {
+		e.stopPropagation();
+		setFundAmt(parseInt(e.target.value));
 	};
 
 	const { data: getAccessLevel } = useReadContract({
@@ -60,6 +74,12 @@ export default function EventCard({ data }: any) {
 	const { data: getTicketPrice } = useReadContract({
 		...eventGateContract,
 		functionName: "getTicketPricesFromEventId",
+		args: [data.eventId],
+	});
+
+	const { data: getCollectedAmt } = useReadContract({
+		...eventGateContract,
+		functionName: "getCollectedAmountForEventId",
 		args: [data.eventId],
 	});
 
@@ -92,7 +112,7 @@ export default function EventCard({ data }: any) {
 	};
 	const handleBuyTicket = async (e: React.MouseEvent) => {
 		e.stopPropagation();
-		writeContract({
+		writeContractMint({
 			abi: EventGateAbi.abi,
 			address: EventGateAbi.address as `0x${string}`,
 			functionName: "mintLiveTicket",
@@ -102,14 +122,20 @@ export default function EventCard({ data }: any) {
 	};
 
 	useEffect(() => {
-		if (isSuccess) {
+		if (mintSuccess) {
 			toast({
 				title: "Registered Successfully",
 				description: "You have successfully registered for the event.",
 			});
 			setIsDialogOpen(true);
 		}
-	}, [isSuccess]);
+		if (isSuccess) {
+			toast({
+				title: "Fund Successful",
+				description: "You have successfully funded for the event.",
+			});
+		}
+	}, [mintSuccess]);
 
 	return (
 		<>
@@ -159,14 +185,34 @@ export default function EventCard({ data }: any) {
 							</div>
 						</div>
 					) : (
-						<div className="h-full flex flex-col">
-							<div className="flex items-center gap-x-4">
-								<p className="text-xl font-medium">
-									Total Fans Registered:
-								</p>
-								<span className="text-xl font-bold">0</span>
+						<div className="h-full flex flex-col gap-y-2">
+							<div className="grid grid-cols-2 border-b-2 border-secondaryColor pb-2">
+								<div className="flex flex-col items-center gap-4">
+									<p className="text-base font-medium">
+										Fans Registered:
+									</p>
+									<span className="text-lg font-bold">
+										{formatEther(
+											getCollectedAmt && getCollectedAmt
+										) / (2.5).toFixed()}
+									</span>
+								</div>
+								<div className="flex flex-col items-center gap-4">
+									<p className="text-base font-medium">
+										Collected Amount:
+									</p>
+									<span className="text-lg font-bold">
+										{formatEther(
+											getCollectedAmt && getCollectedAmt
+										)}{" "}
+										<span className="text-sm font-semibold">
+											CHZ
+										</span>
+									</span>
+								</div>
 							</div>
-							<div className="h-full flex flex-col gap-y-2 pt-4">
+
+							<div className="h-full flex flex-col gap-y-2 pt-2">
 								<h6 className="text-lg font-semibold text-primaryColor underline decoration-wavy decoration-secondaryColor">
 									Tickets
 								</h6>
@@ -196,11 +242,14 @@ export default function EventCard({ data }: any) {
 															);
 														}}
 													>
-														<h6 className="text-base font-semibold mx-auto">
+														<h6 className="text-base font-medium mx-auto">
 															{accessLevel}
 														</h6>
-														<p className="text-lg font-bold mx-auto">
-															{ticketPrice}
+														<p className="text-lg font-semibold mx-auto">
+															{ticketPrice}{" "}
+															<span className="text-sm font-semibold">
+																CHZ
+															</span>
 														</p>
 													</div>
 												)
@@ -211,9 +260,14 @@ export default function EventCard({ data }: any) {
 							<div className="flex items-center gap-x-2 py-2">
 								<Input
 									placeholder="Fund"
-									onClick={handleFundClick}
+									onChange={(e) => handelInput(e)}
+									onClick={(e) => e.stopPropagation()}
+									onFocus={(e) => e.stopPropagation()}
 								/>
-								<Button onClick={handleFundClick} className="">
+								<Button
+									onClick={(e) => handleFundClick(e)}
+									className=""
+								>
 									Fund
 								</Button>
 							</div>

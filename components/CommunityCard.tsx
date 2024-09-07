@@ -19,20 +19,36 @@ import {
 } from "@/components/ui/dialog";
 import ShareButtons from "./ShareBtn";
 import Link from "next/link";
+import { parseEther } from "viem";
 
 export default function CommunityCard({ data, type }: any) {
 	const [flipped, setFlipped] = useState(false);
+	const { writeContract: writeContractMint, isSuccess: mintSuccess } =
+		useWriteContract();
 	const { writeContract, isSuccess } = useWriteContract();
 	const { address } = useAccount();
 	const { toast } = useToast();
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [fundAmt, setFundAmt] = useState(0);
 
 	const handleCardClick = () => {
 		setFlipped(!flipped);
 	};
 
+	const handelInput = (e: any) => {
+		e.stopPropagation();
+		setFundAmt(parseInt(e.target.value));
+	};
+
 	const handleFundClick = async (e: React.MouseEvent) => {
 		e.stopPropagation();
+		writeContract({
+			address: EventGateAbi.address as `0x${string}`,
+			abi: EventGateAbi.abi,
+			functionName: "nexusDrop",
+			args: [data.eventId],
+			value: parseEther(fundAmt.toString()),
+		});
 	};
 
 	const { data: tokenId, error } = useReadContract({
@@ -45,7 +61,7 @@ export default function CommunityCard({ data, type }: any) {
 
 	const register = async (e: React.MouseEvent) => {
 		e.stopPropagation();
-		writeContract({
+		writeContractMint({
 			abi: EventGateAbi.abi,
 			address: EventGateAbi.address as `0x${string}`,
 			functionName: "mintCommunityTicket",
@@ -53,14 +69,20 @@ export default function CommunityCard({ data, type }: any) {
 		});
 	};
 	useEffect(() => {
-		if (isSuccess) {
+		if (mintSuccess) {
 			toast({
 				title: "Registered Successfully",
 				description: "You have successfully registered for the event.",
 			});
 			setIsDialogOpen(true);
 		}
-	}, [isSuccess]);
+		if (isSuccess) {
+			toast({
+				title: "Fund Successful",
+				description: "You have successfully funded for the event.",
+			});
+		}
+	}, [mintSuccess]);
 
 	return (
 		<>
@@ -124,10 +146,12 @@ export default function CommunityCard({ data, type }: any) {
 								<div className="flex items-center gap-x-2 py-2">
 									<Input
 										placeholder="Fund"
-										onClick={handleFundClick}
+										onChange={(e) => handelInput(e)}
+										onClick={(e) => e.stopPropagation()}
+										onFocus={(e) => e.stopPropagation()}
 									/>
 									<Button
-										onClick={handleFundClick}
+										onClick={(e) => handleFundClick(e)}
 										className=""
 									>
 										Fund
