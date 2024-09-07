@@ -201,8 +201,8 @@ export default function EventCard({ data }: any) {
 														? getCollectedAmt
 														: BigInt(0) // Ensure it's a bigint
 												)
-											) / 2.5
-										).toFixed(2)}
+											) / 2
+										).toFixed()}
 									</span>
 								</div>
 								<div className="flex flex-col items-center gap-4">
